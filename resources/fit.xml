@@ -1,0 +1,46 @@
+<resources>
+  <fitContributions>
+    <fitField id="0"
+      displayInChart="false"
+      sortOrder = "0"
+      precision="0"
+      displayInActivityLaps="false"
+      dataLabel="@Strings.ciq_all_rep_counter"
+      unitLabel="@Strings.ciq_unit_rep"/>
+    <fitField id="1"
+      displayInChart="false"
+      sortOrder = "1"
+      precision="0"
+      displayInActivityLaps="true"
+      dataLabel="@Strings.ciq_rep_counter"
+      unitLabel="@Strings.ciq_unit_rep"/>
+    <fitField id="2"
+      displayInChart="false"
+      sortOrder = "2"
+      precision="1"
+      displayInActivityLaps="true"
+      dataLabel="@Strings.ciq_time_set"
+      unitLabel="@Strings.ciq_unit_time"/>
+    <fitField id="3"
+      displayInChart="false"
+      sortOrder = "3"
+      precision="1"
+      displayInActivityLaps="true"
+      dataLabel="@Strings.ciq_time_rest"
+      unitLabel="@Strings.ciq_unit_time"/>
+    <fitField id="10"
+      displayInChart="false"
+      sortOrder = "10"
+      precision="0"
+      displayInActivityLaps="false"
+      dataLabel="@Strings.ciq_threshold_high"
+      unitLabel="@Strings.ciq_unit_acceleration"/>
+    <fitField id="11"
+      displayInChart="false"
+      sortOrder = "11"
+      precision="0"
+      displayInActivityLaps="false"
+      dataLabel="@Strings.ciq_threshold_low"
+      unitLabel="@Strings.ciq_unit_acceleration"/>
+  </fitContributions>
+</resources>

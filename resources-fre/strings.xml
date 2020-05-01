@@ -1,11 +1,40 @@
 <strings>
-	<string id="AppName">RepCount</string>
+  <string id="AppName">RCounter</string>
 
-	<string id="prompt">Click the menu button</string>
+  <string id="rest_msg">repos</string>
+  <string id="workout_done_msg">Enregistrement OK</string>
+  <string id="workout_done_err">Enregistrement KO</string>
 
-	<string id="menu_high_threshold">High Threshold</string>
-	<string id="menu_low_threshold">Low Threshold</string>
+  <string id="menu_settings">Configuration</string>
+  <string id="menu_calibration">Etalonnage</string>
+  <string id="menu_high_threshold">Seuil Haut</string>
+  <string id="menu_low_threshold">Seuil Bas</string>
 
-	<string id="timer_label">TIMER</string>
-	<string id="set_label">SET</string>
+  <string id="menu_calibration_instructions_1">Appuyez sur start pour calibrer les seuils.</string>
+  <string id="menu_calibration_instructions_2"> Appuyez sur start si terminé.</string>
+  <string id="menu_calibration_instructions_3">Faites </string>
+  <string id="menu_calibration_instructions_4"> reps pour calibrer.</string>
+  <string id="menu_calibration_computing">Calcul...</string>
+  <string id="menu_calibration_ok">Etalonnage OK.</string>
+  <string id="menu_calibration_abort">Etalonnage arrêté.</string>
+
+  <string id="menu_end">Pause</string>
+  <string id="menu_end_resume">Reprendre</string>
+  <string id="menu_end_save">Enregistrer</string>
+  <string id="menu_end_discard">Effacer</string>
+  <string id="menu_end_confirm_discard">Effacer?</string>
+
+  <string id="ciq_rep_counter">Repetitions</string>
+  <string id="ciq_all_rep_counter">Repetitions total</string>
+  <string id="ciq_time_set">Durée</string>
+  <string id="ciq_time_rest">Repos</string>
+  <string id="ciq_threshold_high">Seuil haut</string>
+  <string id="ciq_threshold_low">Seuil bas</string>
+  
+  <string id="ciq_unit_rep">rep</string>
+  <string id="ciq_unit_time">s</string>
+  <string id="ciq_unit_acceleration">mG</string>
+
+  <string id="timer_label">CHRONO</string>
+  <string id="set_label">SERIE</string>
 </strings>

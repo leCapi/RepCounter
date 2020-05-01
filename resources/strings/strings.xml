@@ -1,11 +1,40 @@
 <strings>
-	<string id="AppName">RepCount</string>
+  <string id="AppName">RCounter</string>
 
-	<string id="prompt">Click the menu button</string>
+  <string id="rest_msg">rest</string>
+  <string id="workout_done_msg">Workout saved</string>
+  <string id="workout_done_err">Can't save</string>
 
-	<string id="menu_high_threshold">High Threshold</string>
-	<string id="menu_low_threshold">Low Threshold</string>
+  <string id="menu_settings">Settings</string>
+  <string id="menu_calibration">Calibration</string>
+  <string id="menu_high_threshold">High Threshold</string>
+  <string id="menu_low_threshold">Low Threshold</string>
 
-	<string id="timer_label">TIMER</string>
-	<string id="set_label">SET</string>
+  <string id="menu_calibration_instructions_1">Press start to calibrate the thresholds.</string>
+  <string id="menu_calibration_instructions_2"> Press start if done before timer end.</string>
+  <string id="menu_calibration_instructions_3">Do </string>
+  <string id="menu_calibration_instructions_4"> reps to calibrate.</string>
+  <string id="menu_calibration_computing">Computing...</string>
+  <string id="menu_calibration_ok">Calibration done.</string>
+  <string id="menu_calibration_abort">Calibration abort.</string>
+
+  <string id="menu_end">Pause</string>
+  <string id="menu_end_resume">Resume</string>
+  <string id="menu_end_save">Save</string>
+  <string id="menu_end_discard">Discard</string>
+  <string id="menu_end_confirm_discard">Discard?</string>
+
+  <string id="ciq_rep_counter">Repetitions</string>
+  <string id="ciq_all_rep_counter">Total Repetitions</string>
+  <string id="ciq_time_set">Duration</string>
+  <string id="ciq_time_rest">Rest</string>
+  <string id="ciq_threshold_high">High threshold</string>
+  <string id="ciq_threshold_low">Low threshold</string>
+  
+  <string id="ciq_unit_rep">rep</string>
+  <string id="ciq_unit_time">s</string>
+  <string id="ciq_unit_acceleration">mG</string>
+
+  <string id="timer_label">TIMER</string>
+  <string id="set_label">SET</string>
 </strings>

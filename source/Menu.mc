@@ -1,15 +1,23 @@
+using Toybox.Application;
 using Toybox.Graphics as Gfx;
 using Toybox.WatchUi;
-using Toybox.System;
+using Toybox.Timer;
+
+public const INC_TICK_SETTING = 1;
+public const INC_TICK_SETTING_FAST = 20;
+
+var g_threshodCurrentSetting;
 
 class EditThresholdView extends WatchUi.View
 {
-    var m_thresholdType;
+    protected var m_thresholdType;
+    protected var m_appSettings;
 
-    function initialize(thresholdType)
+    function initialize(thresholdType, settings)
     {
         View.initialize();
         self.m_thresholdType = thresholdType;
+        self.m_appSettings = settings;
         g_threshodCurrentSetting = loadThreshold();
     }
 
@@ -19,11 +27,11 @@ class EditThresholdView extends WatchUi.View
         switch(self.m_thresholdType)
         {
             case THRESHOLD_LOW:
-                value = g_lowThresholdValue;
+                value = m_appSettings.m_lowThresholdValue;
                 break;
             default:
             case THRESHOLD_HIGH:
-                value = g_highThresholdValue;
+                value = m_appSettings.m_highThresholdValue;
         }
         return value;
     }
@@ -31,12 +39,15 @@ class EditThresholdView extends WatchUi.View
     function onUpdate(dc)
     {
         View.onUpdate(dc);
-        dc.clear();
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
-        var xMid = dc.getWidth() / 2;
-        var yMid = dc.getHeight() / 2;
+        dc.clear();
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+        var fontThresholdValue = Gfx.FONT_NUMBER_THAI_HOT;
+        var fontUnit = Gfx.FONT_LARGE;
+        var spaceNeeded = dc.getFontHeight(fontUnit);
+        dc.drawText(g_XMid, g_YMid, fontThresholdValue, g_threshodCurrentSetting, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, "mG", Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
 
-        dc.drawText(xMid, yMid, Gfx.FONT_NUMBER_THAI_HOT, g_threshodCurrentSetting, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
         return true;
     }
 
@@ -53,12 +64,20 @@ class EditThresholdView extends WatchUi.View
 
 class EditThresholdInputDelegate extends WatchUi.InputDelegate
 {
-    var m_thresholdType;
+    protected var m_thresholdType;
+    protected var m_timer;
+    protected var m_alreadyInc;
+    protected var m_alreadyDec;
+    protected var m_appSettings;
 
-    function initialize(thresholdType)
+    function initialize(thresholdType, settings)
     {
         InputDelegate.initialize();
         self.m_thresholdType = thresholdType;
+        self.m_timer = new Timer.Timer();
+        self.m_alreadyInc = false;
+        self.m_alreadyDec = false;
+        self.m_appSettings = settings;
     }
 
     function onTap(evt) {
@@ -82,10 +101,10 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         switch(self.m_thresholdType)
         {
             case THRESHOLD_LOW:
-                g_lowThresholdValue = newValue;
+                m_appSettings.m_lowThresholdValue = newValue;
                 break;
             case THRESHOLD_HIGH:
-                g_highThresholdValue = newValue;
+                m_appSettings.m_highThresholdValue = newValue;
         }
     }
 
@@ -97,6 +116,23 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
     function decrementThreshold(inc)
     {
         g_threshodCurrentSetting -= inc;
+        if (g_threshodCurrentSetting < 0) {
+            g_threshodCurrentSetting = 0;
+        }
+    }
+
+    function incrmentThresholdFast()
+    {
+        incrementThreshold(INC_TICK_SETTING_FAST);
+        m_alreadyInc = true;
+        WatchUi.requestUpdate();
+    }
+
+    function decrmentThresholdFast()
+    {
+        decrementThreshold(INC_TICK_SETTING_FAST);
+        m_alreadyDec = true;
+        WatchUi.requestUpdate();
     }
 
     function onKey(evt)
@@ -106,18 +142,10 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         {
             case KEY_ENTER:
                 saveThreshold(g_threshodCurrentSetting);
-                WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+                WatchUi.popView(WatchUi.SLIDE_RIGHT);
                 return true;
             case KEY_ESC:
-                WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-                return true;
-            case KEY_UP:
-                self.incrementThreshold(50);
-                WatchUi.requestUpdate();
-                return true;
-            case KEY_DOWN:
-                self.decrementThreshold(50);
-                WatchUi.requestUpdate();
+                WatchUi.popView(WatchUi.SLIDE_RIGHT);
                 return true;
         }
         return false;
@@ -125,17 +153,49 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
 
     function onKeyPressed(evt)
     {
+        var key = evt.getKey();
+        var g_refreshTimeMain = 350;
+        switch (key)
+        {
+            case KEY_UP:
+                m_timer.stop();
+                m_timer.start(method(:incrmentThresholdFast), g_refreshTimeMain, true);
+                return true;
+            case KEY_DOWN:
+                m_timer.stop();
+                m_timer.start(method(:decrmentThresholdFast), g_refreshTimeMain, true);
+                return true;
+        }
         return false;
     }
 
-    function onKeyReleased(evt) {
+    function onKeyReleased(evt)
+    {
+        var key = evt.getKey();
+        switch (key)
+        {
+            case KEY_UP:
+                m_timer.stop();
+                if (!m_alreadyInc) {
+                    self.incrementThreshold(INC_TICK_SETTING);
+                    WatchUi.requestUpdate();
+                }
+                m_alreadyInc = false;
+                return true;
+            case KEY_DOWN:
+                m_timer.stop();
+                if (!m_alreadyDec) {
+                    self.decrementThreshold(INC_TICK_SETTING);
+                    WatchUi.requestUpdate();
+                }
+                m_alreadyDec = false;
+                return true;
+        }
         return false;
     }
-
-
 }
 
-class SettingsMenu extends WatchUi.MenuInputDelegate
+class MainMenuInputDelegate extends WatchUi.MenuInputDelegate
 {
     function initialize()
     {
@@ -144,12 +204,21 @@ class SettingsMenu extends WatchUi.MenuInputDelegate
 
     function onMenuItem(item)
     {
-        if (item == :menu_high_threshold){
-            WatchUi.pushView(new EditThresholdView(THRESHOLD_HIGH),
-                new EditThresholdInputDelegate(THRESHOLD_HIGH), WatchUi.SLIDE_LEFT);
+        var app = Application.getApp();
+        var settings = app.m_hysteresis.m_settings;
+        if (item == :menu_calibration){
+            WatchUi.pushView(new MenuCalibrationView(),
+                new MenuCalibrationInputDelegate(),
+                WatchUi.SLIDE_IMMEDIATE);
+        }
+        else if (item == :menu_high_threshold){
+            WatchUi.pushView(new EditThresholdView(THRESHOLD_HIGH, settings),
+                new EditThresholdInputDelegate(THRESHOLD_HIGH, settings),
+                WatchUi.SLIDE_LEFT);
         }else if (item == :menu_low_threshold){
-            WatchUi.pushView(new EditThresholdView(THRESHOLD_LOW),
-                new EditThresholdInputDelegate(THRESHOLD_LOW), WatchUi.SLIDE_LEFT);
+            WatchUi.pushView(new EditThresholdView(THRESHOLD_LOW, settings),
+                new EditThresholdInputDelegate(THRESHOLD_LOW, settings),
+                WatchUi.SLIDE_LEFT);
         }
     }
 }
