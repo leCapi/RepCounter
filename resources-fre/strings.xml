@@ -1,0 +1,11 @@
+<strings>
+	<string id="AppName">RepCount</string>
+
+	<string id="prompt">Click the menu button</string>
+
+	<string id="menu_high_threshold">High Threshold</string>
+	<string id="menu_low_threshold">Low Threshold</string>
+
+	<string id="timer_label">TIMER</string>
+	<string id="set_label">SET</string>
+</strings>
