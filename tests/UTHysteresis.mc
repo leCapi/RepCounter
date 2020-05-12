@@ -4,10 +4,9 @@ using Toybox.System;
 (:test)
 function tHysteresis(logger)
 {
-    var settings = new Settings();
-    settings.m_highThresholdValue = 2200;
-    settings.m_lowThresholdValue = 1200;
-    var hysteresis = new Hystersis(settings);
+    var hysteresis = new Hystersis();
+    hysteresis.m_settings.m_highThresholdValue = 2200;
+    hysteresis.m_settings.m_lowThresholdValue = 1200;
     var data50RopeSession = [1081, 1074, 1121, 1035, 1010, 1033, 948, 834, 966, 1163,
         981, 1008, 1025, 1045, 1232, 1291, 1170, 1383, 1272, 1293, 1302, 1073, 1159,
         1165, 950, 895, 1005, 951, 975, 1187, 1238, 1257, 1387, 1471, 1514, 1639, 1761,
