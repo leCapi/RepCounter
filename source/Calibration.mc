@@ -193,6 +193,19 @@ class Calibration
             time.sec.format("%02d") +
             " : calibration results"
         );
+        System.println(
+            "q1:" + self.quantileValue(1) +
+            " q10:" + self.quantileValue(10) +
+            " q20:" + self.quantileValue(20) +
+            " q30:" + self.quantileValue(30) +
+            " q40:" + self.quantileValue(40) +
+            " q50:" + self.quantileValue(50) +
+            " q60:" + self.quantileValue(60) +
+            " q70:" + self.quantileValue(70) +
+            " q80:" + self.quantileValue(80) +
+            " q90:" + self.quantileValue(90) +
+            " q100:" + self.quantileValue(100)
+        );
 
         for(var i = 0; i<m_settingsList.size(); i++)
         {
