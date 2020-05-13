@@ -129,10 +129,10 @@ class MenuCalibrationView extends WatchUi.View
                 display_calibration_running(dc);
                 break;
             case CALIBRATION_COMPUTING:
-            case CALIBRATION_COMPUTING_HIGH:
-            case CALIBRATION_COMPUTING_BOT:
-            case CALIBRATION_COMPUTING_STATS:
+            case CALIBRATION_COMPUTING_QUANTILE:
+            case CALIBRATION_COMPUTING_PREPARE_EVALUATIONS:
             case CALIBRATION_COMPUTING_EVALUATIONS:
+            case CALIBRATION_COMPUTING_CHOOSE_SETTINGS:
                 // handled by a progressBar view
                 break;
             case CALIBRATION_DONE:
@@ -260,11 +260,10 @@ class MenuCalibrationInputDelegate extends WatchUi.InputDelegate
             case CALIBRATION_RUNNING:
                 return handleKeyCalibrationRunning(key);
             case CALIBRATION_COMPUTING:
-            case CALIBRATION_COMPUTING_HIGH:
-            case CALIBRATION_COMPUTING_PREPARE_BOT:
-            case CALIBRATION_COMPUTING_BOT:
-            case CALIBRATION_COMPUTING_STATS:
+            case CALIBRATION_COMPUTING_QUANTILE:
+            case CALIBRATION_COMPUTING_PREPARE_EVALUATIONS:
             case CALIBRATION_COMPUTING_EVALUATIONS:
+            case CALIBRATION_COMPUTING_CHOOSE_SETTINGS:
                 return handleKeyCalibrationComputing(key);
             case CALIBRATION_DONE:
             case CALIBRATION_ABORT:

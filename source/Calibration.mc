@@ -11,26 +11,25 @@ enum
     CALIBRATION_NOT_RUNNING = 0,
     CALIBRATION_RUNNING = 1,
     CALIBRATION_COMPUTING = 2,
-    CALIBRATION_COMPUTING_HIGH = 3,
-    CALIBRATION_COMPUTING_PREPARE_BOT = 4,
-    CALIBRATION_COMPUTING_BOT = 5,
-    CALIBRATION_COMPUTING_STATS = 6,
-    CALIBRATION_COMPUTING_EVALUATIONS = 7,
-    CALIBRATION_COMPUTING_CHOOSE_SETTINGS = 8,
-    CALIBRATION_DONE = 9,
-    CALIBRATION_ABORT = 10
+    CALIBRATION_COMPUTING_QUANTILE = 3,
+    CALIBRATION_COMPUTING_PREPARE_EVALUATIONS = 4,
+    CALIBRATION_COMPUTING_EVALUATIONS = 5,
+    CALIBRATION_COMPUTING_CHOOSE_SETTINGS = 6,
+    CALIBRATION_DONE = 7,
+    CALIBRATION_ABORT = 8
 }
 
 const maxCalibrationClockCount = 20;
 
 const TIMER_COMPUTATION_INTERVAL = 300;
-const SORT_INTERVAL_SIZE = 5;
 const INCREMENT_PROGRESS_BAR = Math.ceil(100.0/(CALIBRATION_DONE - CALIBRATION_COMPUTING)).toNumber();
 
 class Calibration
 {
     var m_state;
     var m_dataRecorded;
+    var m_dataRecordedSorted;
+    var m_quantiles;
     var m_lastChunkNeeded;
     var m_timerTimeout;
     var m_timerComputation;
@@ -39,12 +38,6 @@ class Calibration
     // computation
     var m_computationProgressBar;
     var m_progression;
-    var m_sortIntervalSize;
-    var m_nbSortedLow;
-    var m_nbSortedHigh;
-    var m_sortedHighValues;
-    var m_sortedLowValues;
-    var m_startSelection;
     var m_settingsList;
     var m_settingToTest;
 
@@ -55,7 +48,6 @@ class Calibration
         var processingLabel = WatchUi.loadResource(Rez.Strings.menu_calibration_computing);
         self.m_progression = 0;
         self.m_computationProgressBar = new WatchUi.ProgressBar(processingLabel, 0);
-        self.m_sortIntervalSize = SORT_INTERVAL_SIZE;
         self.reset();
     }
 
@@ -104,10 +96,8 @@ class Calibration
                     new ProgressBarBehaviorDelegate(),
                     WatchUi.SLIDE_IMMEDIATE);
                 break;
-            case CALIBRATION_COMPUTING_HIGH:
-            case CALIBRATION_COMPUTING_PREPARE_BOT:
-            case CALIBRATION_COMPUTING_BOT:
-            case CALIBRATION_COMPUTING_STATS:
+            case CALIBRATION_COMPUTING_QUANTILE:
+            case CALIBRATION_COMPUTING_PREPARE_EVALUATIONS:
             case CALIBRATION_COMPUTING_EVALUATIONS:
             case CALIBRATION_COMPUTING_CHOOSE_SETTINGS:
                 self.updateProgressBar();
@@ -125,15 +115,12 @@ class Calibration
         m_timerTimeout.stop();
         m_timerComputation.stop();
         m_state = CALIBRATION_NOT_RUNNING;
-        m_dataRecorded = null;
+        m_dataRecorded = new[0];
+        m_dataRecordedSorted = new SortedList();
+        m_quantiles = new[100];
         m_lastChunkNeeded = false;
         m_clockCount = 0;
         m_nbRepToCalibrate = DEFAULT_CALIBRATION_NUMBER_REPS;
-        m_nbSortedLow = 0;
-        m_nbSortedHigh = 0;
-        m_sortedHighValues = null;
-        m_sortedLowValues = null;
-        m_startSelection = 0;
         m_settingsList = new [0];
         m_settingToTest = 0;
         m_progression = 0;
@@ -142,121 +129,47 @@ class Calibration
 
     function quantileIndex(iq)
     {
-        var index = Math.round(iq.toFloat()/100 * m_dataRecorded.size()) - 1;
+        if(iq > 100)
+        {
+            return MAX_INT32;
+        }
+        var index = Math.ceil(iq.toFloat()/100 * m_dataRecorded.size()) - 1;
         return index.toNumber();
     }
 
-    function prepareTopValues(nbElt)
+    function quantileValue(quantile)
     {
-        m_nbSortedHigh = nbElt;
-        m_sortedHighValues = new [m_nbSortedHigh+1];
-        m_sortedHighValues[0] = MAX_INT32;
-        m_startSelection = 1;
+        return m_quantiles[quantile - 1];
     }
 
-    function selectTopValues()
+    function computeQuantiles()
     {
-        var nbValues = m_dataRecorded.size();
-        var max = m_startSelection + m_sortIntervalSize;
-        max = max > m_nbSortedHigh ? m_nbSortedHigh : max;
-        var i = 0;
-        for(i = m_startSelection; i <= max; i++){
-            var previousTopVal = m_sortedHighValues[i - 1];
-            m_sortedHighValues[i] = -1;
-            var nbRepetitions = 0;
-            for (var j = 0; j < nbValues; j++) {
-                var currentVal = m_dataRecorded[j];
-                if (currentVal < previousTopVal) {
-                    if(m_sortedHighValues[i] < currentVal){
-                        m_sortedHighValues[i] = currentVal;
-                        nbRepetitions = 1;
-                    } else if(m_sortedHighValues[i] == currentVal) {
-                        nbRepetitions++;
-                    }
-                }
-            }
-            for (var k = 1; k < nbRepetitions; k++) {
-                var prevValMult = m_sortedHighValues[i];
-                i++;
-                if (i > m_nbSortedHigh) {
-                    return true;
-                }
-                m_sortedHighValues[i] = prevValMult;
+        var quant = 1;
+        var quantIndex = quantileIndex(quant);
+        var it = m_dataRecordedSorted.m_first;
+        var listIndex = 0;
+        while(it != null) {
+            if(listIndex < quantIndex) {
+                it = it.m_next;
+                listIndex++;
+            } else {
+                m_quantiles[quant - 1] = it.m_value;
+                quant++;
+                quantIndex = quantileIndex(quant);
             }
         }
-        if((i - 1) > max) {
-            m_startSelection += (i - 1 - max);
-        }
-        m_startSelection += m_sortIntervalSize + 1;
-        if (i > m_nbSortedHigh) {
-            return true;
-        }
-        return false;
-    }
-
-    function prepareBotValues(nbElt)
-    {
-        m_nbSortedLow = nbElt;
-        m_sortedLowValues = new [m_nbSortedLow + 1];
-        m_sortedLowValues[0] = -1;
-        m_startSelection = 1;
-    }
-
-    function selectBotValues()
-    {
-        var nbValues = m_dataRecorded.size();
-        var max = m_startSelection + m_sortIntervalSize;
-        max = max > m_nbSortedLow ? m_nbSortedLow : max;
-        var i = 0;
-        for(i = m_startSelection; i <= max; i++){
-            var previousLowVal = m_sortedLowValues[i - 1];
-            m_sortedLowValues[i] = MAX_INT32;
-            var nbRepetitions = 0;
-            for (var j = 0; j < nbValues; j++) {
-                var currentVal = m_dataRecorded[j];
-                if (currentVal > previousLowVal) {
-                    if(m_sortedLowValues[i] > currentVal){
-                        m_sortedLowValues[i] = currentVal;
-                        nbRepetitions = 1;
-                    } else if(m_sortedLowValues[i] == currentVal) {
-                        nbRepetitions++;
-                    }
-                }
-            }
-            for (var k = 1; k < nbRepetitions; k++) {
-                var prevValMult = m_sortedLowValues[i];
-                i++;
-                if (i > m_nbSortedLow) {
-                    return true;
-                }
-                m_sortedLowValues[i] = prevValMult;
-            }
-        }
-        if((i - 1) > max) {
-            m_startSelection += (i - 1 - max);
-        }
-        m_startSelection += m_sortIntervalSize + 1;
-        if (i > m_nbSortedLow) {
-            return true;
-        }
-        return false;
     }
 
     function prepareSettings()
     {
-        var m_sortedHighValues;
-        var m_sortedLowValues;
         var listLQ = [20, 22, 25];
         var listHQ = [75, 80, 85, 90];
-        var indexQ75 = self.quantileIndex(75);
         for(var i = 0; i < listLQ.size(); i++) {
             for(var j = 0; j < listHQ.size(); j++) {
                 var lQ = listLQ[i];
                 var hQ = listHQ[j];
-                var lQIndex = self.quantileIndex(lQ);
-                var hQIndex = self.quantileIndex(hQ);
-                var lV = self.m_sortedLowValues[lQIndex + 1];
-                var hV = self.m_sortedHighValues[hQIndex - indexQ75 + 1];
+                var lV = self.quantileValue(lQ);
+                var hV = self.quantileValue(hQ);
                 var testSettings = new TestSettings(lQ, hQ, lV, hV);
                 m_settingsList.add(testSettings);
             }

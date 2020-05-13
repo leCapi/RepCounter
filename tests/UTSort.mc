@@ -46,9 +46,10 @@ function tIsArraySorted(logger)
 (:test)
 function tMergeSort(logger)
 {
-    var array = [898, 90889, -744, 1234, 2, 392, -33, 90];
+    var array = [898, 90889, -744, 1234, 2, 2, 392, -33, 90];
     mergesort(array);
     Test.assertEqualMessage(isArraySorted(array), true, "sort failed");
+    Test.assertEqualMessage(array.size(), 9, "sort failed");
 
     return true;
 }

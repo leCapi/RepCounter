@@ -21,17 +21,21 @@ class SortedList
         m_length = 0;
     }
 
+    function size()
+    {
+        return m_length;
+    }
+
     function insertSortedArray(array)
     {
         var i = 0;
-        var it = m_first;
-        var prevIt = null;
         if(m_first == null) {
             m_first = new NodeList(array[0], null);
-            it = m_first;
             i++;
             m_length++;
         }
+        var prevIt = null;
+        var it = m_first;
         for(; i < array.size(); i++) {
             var valueToInsert = array[i];
             while(it.m_value <= valueToInsert) {
@@ -48,11 +52,11 @@ class SortedList
                     prevIt.m_next = newNode;
                 } else {
                     m_first = newNode;
-                    prevIt = newNode;
                 }
+                prevIt = newNode;
             } else {
                 // append to list
-                var newNode = new NodeList(valueToInsert, null);
+                var newNode = new NodeList(valueToInsert, it.m_next);
                 it.m_next = newNode;
             }
             m_length++;

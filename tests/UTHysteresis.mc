@@ -71,78 +71,18 @@ function tquantile(logger)
     var expectedResult = 9;
     Test.assertEqualMessage(indexQ90 == expectedResult, true, "expected : " + expectedResult +
         ", got : " + indexQ90);
-    return true;
-}
 
-(:test)
-function tselectTopValues(logger)
-{
-    var cal = new Calibration();
-    cal.m_dataRecorded = [ 1212, 1401, 123, 123, 123, 1401, 90, 9800, 4, 5, 980 ];
-    var expectedResult = [ 9800, 1401, 1401, 1212, 980, 123, 123];
-    cal.prepareTopValues(7);
-    cal.m_sortIntervalSize = 6;
-    var fcomp = cal.selectTopValues();
-    Test.assertEqual(fcomp, true);
-    var result = cal.m_sortedHighValues.slice(1,8);
-    Test.assertEqualMessage(sameArray(expectedResult, result), true, "expected : " + expectedResult +
-        ", got : " + result);
+    mergesort(cal.m_dataRecorded);
+    cal.m_dataRecordedSorted.insertSortedArray(cal.m_dataRecorded);
+    cal.computeQuantiles();
 
-    cal = new Calibration();
-    cal.m_dataRecorded = [ 1212, 1401, 123, 123, 123, 1401, 90, 9800, 4, 5, 980, 89 ];
-    expectedResult = [ 9800, 1401, 1401, 1212, 980, 123, 123, 123, 90, 89 ];
-    cal.prepareTopValues(10);
-    cal.m_sortIntervalSize = 6;
-    fcomp = cal.selectTopValues();
-    Test.assertEqual(fcomp, false);
-    fcomp = cal.selectTopValues();
-    Test.assertEqual(fcomp, true);
-    result = cal.m_sortedHighValues.slice(1,11);
-    Test.assertEqualMessage(sameArray(expectedResult, result), true, "expected : " + expectedResult +
-        ", got : " + result);
-
-    cal = new Calibration();
-    cal.m_dataRecorded = [ 5, 98, 8907, 456, 1, 7, 12, 24];
-    cal.prepareTopValues(5);
-    cal.m_sortIntervalSize = 3;
-    expectedResult = [ 8907, 456, 98, 24, 12];
-    fcomp = cal.selectTopValues();
-    Test.assertEqual(fcomp, false);
-    fcomp = cal.selectTopValues();
-    Test.assertEqual(fcomp, true);
-    result = cal.m_sortedHighValues.slice(1,6);
-    Test.assertEqualMessage(sameArray(expectedResult, result), true, "expected : " + expectedResult +
-        ", got : " + result);
-
-    return true;
-}
-
-(:test)
-function tselectBotValues(logger)
-{
-    var cal = new Calibration();
-    cal.m_dataRecorded = [ 1212, 1401, 123, 123, 123, 1401, 90, 9800, 4, 5, 1212 ];
-    var expectedResult = [ 4, 5, 90, 123, 123, 123, 1212];
-    cal.prepareBotValues(7);
-    cal.m_sortIntervalSize = 6;
-    var fcomp = cal.selectBotValues();
-    Test.assertEqual(fcomp, true);
-    var result = cal.m_sortedLowValues.slice(1,8);
-    Test.assertEqualMessage(sameArray(expectedResult, result), true, "expected : " + expectedResult +
-        ", got : " + result);
-
-    cal = new Calibration();
-    cal.m_dataRecorded = [ 1212, 1401, 123, 123, 123, 1401, 90, 9800, 4, 5, 1212 ];
-    expectedResult = [ 4, 5, 90, 123, 123, 123, 1212];
-    cal.prepareBotValues(7);
-    cal.m_sortIntervalSize = 5;
-    fcomp = cal.selectBotValues();
-    Test.assertEqual(fcomp, false);
-    fcomp = cal.selectBotValues();
-    Test.assertEqual(fcomp, true);
-    result = cal.m_sortedLowValues.slice(1,8);
-    Test.assertEqualMessage(sameArray(expectedResult, result), true, "expected : " + expectedResult +
-        ", got : " + result);
+    Test.assertEqual(cal.quantileValue(1) == 4, true);
+    Test.assertEqual(cal.quantileValue(9) == 4, true);
+    Test.assertEqual(cal.quantileValue(10) == 5, true);
+    Test.assertEqual(cal.quantileValue(40) == 123, true);
+    Test.assertEqual(cal.quantileValue(50) == 123, true);
+    Test.assertEqual(cal.quantileValue(91) == 9800, true);
+    Test.assertEqual(cal.quantileValue(100) == 9800, true);
 
     return true;
 }

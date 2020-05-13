@@ -46,7 +46,6 @@ class Hystersis
     {
         m_cal.m_clockCount = maxCalibrationClockCount;
         m_cal.m_state = CALIBRATION_RUNNING;
-        m_cal.m_dataRecorded = new [0];
         if(Attention has :playTone) {
             Attention.playTone(Attention.TONE_START);
         }
@@ -82,10 +81,6 @@ class Hystersis
         {
             return;
         }
-        var indexQ75 = m_cal.quantileIndex(75);
-        var indexQ25 = m_cal.quantileIndex(25);
-        var nbHighEltNeeded = m_cal.m_dataRecorded.size() - indexQ75;
-        m_cal.prepareTopValues(nbHighEltNeeded);
         m_cal.nextCalibrationStep();
         m_cal.m_timerComputation.start(method(:calibrationProcess), TIMER_COMPUTATION_INTERVAL, true);
     }
@@ -94,17 +89,11 @@ class Hystersis
     {
         switch(m_cal.m_state)
         {
-            case CALIBRATION_COMPUTING_HIGH:
-                self.stepSortHighData();
+            case CALIBRATION_COMPUTING_QUANTILE:
+                self.stepComputeQauntile();
                 break;
-            case CALIBRATION_COMPUTING_PREPARE_BOT:
-                self.stepPrepareSortLowData();
-                break;
-            case CALIBRATION_COMPUTING_BOT:
-                self.stepSortLowData();
-                break;
-            case CALIBRATION_COMPUTING_STATS:
-                self.stepComputeStats();
+            case CALIBRATION_COMPUTING_PREPARE_EVALUATIONS:
+                self.stepPrepareEvaluations();
                 break;
             case CALIBRATION_COMPUTING_EVALUATIONS:
                 self.stepComputeEvaluations();
@@ -118,30 +107,13 @@ class Hystersis
         }
     }
 
-    function stepSortHighData()
+    function stepComputeQauntile()
     {
-        var res = m_cal.selectTopValues();
-        if(res) {
-            m_cal.nextCalibrationStep();
-        }
-    }
-
-    function stepPrepareSortLowData()
-    {
-        var indexQ25 = m_cal.quantileIndex(25);
-        m_cal.prepareBotValues(indexQ25 + 1);
+        m_cal.computeQuantiles();
         m_cal.nextCalibrationStep();
     }
 
-    function stepSortLowData()
-    {
-        var res = m_cal.selectBotValues();
-        if(res) {
-            m_cal.nextCalibrationStep();
-        }
-    }
-
-    function stepComputeStats()
+    function stepPrepareEvaluations()
     {
         m_cal.prepareSettings();
         m_cal.nextCalibrationStep();
@@ -200,6 +172,9 @@ class Hystersis
     function appendCalibrationData(data)
     {
         m_cal.m_dataRecorded.addAll(data);
+        mergesort(data);
+        System.println(data);
+        m_cal.m_dataRecordedSorted.insertSortedArray(data);
         if(m_cal.m_lastChunkNeeded){
             m_cal.m_lastChunkNeeded = false;
             self.startCalibrationProcess();

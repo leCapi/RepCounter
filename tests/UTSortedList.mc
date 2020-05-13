@@ -7,7 +7,7 @@ function tInsertSortedArray(logger)
     var array = [-3, -2, 5, 9];
     var list = new SortedList();
     list.insertSortedArray(array);
-    Test.assertEqual(list.m_length, 4);
+    Test.assertEqual(list.size(), 4);
 
     var array2 = [-8, -5, 8, 9, 10, 11];
     list.insertSortedArray(array2);
