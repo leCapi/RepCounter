@@ -37,6 +37,8 @@ class Calibration
     var m_nbRepToCalibrate;
     // computation
     var m_computationProgressBar;
+    var m_textCalibrationDone;
+    var m_processingLabel;
     var m_progression;
     var m_settingsList;
     var m_settingToTest;
@@ -45,9 +47,10 @@ class Calibration
     {
         self.m_timerTimeout = new Timer.Timer();
         self.m_timerComputation = new Timer.Timer();
-        var processingLabel = WatchUi.loadResource(Rez.Strings.menu_calibration_computing);
+        self.m_processingLabel = WatchUi.loadResource(Rez.Strings.menu_calibration_computing);
         self.m_progression = 0;
-        self.m_computationProgressBar = new WatchUi.ProgressBar(processingLabel, 0);
+        self.m_computationProgressBar = new WatchUi.ProgressBar(m_processingLabel, 0);
+        self.m_textCalibrationDone = WatchUi.loadResource(Rez.Strings.menu_calibration_ok);
         self.reset();
     }
 
@@ -69,7 +72,7 @@ class Calibration
 
     function abortCalibration()
     {
-        m_state = CALIBRATION_ABORT;
+        self.reset();
     }
 
     function settingLeftToTest()
@@ -82,7 +85,12 @@ class Calibration
 
     function updateProgressBar()
     {
-        m_progression += INCREMENT_PROGRESS_BAR;
+        if(m_state == CALIBRATION_DONE) {
+            m_progression = 100;
+            m_computationProgressBar.setDisplayString(m_textCalibrationDone);
+        } else {
+            m_progression += INCREMENT_PROGRESS_BAR;
+        }
         m_computationProgressBar.setProgress(m_progression);
     }
 
@@ -92,7 +100,7 @@ class Calibration
         switch (m_state)
         {
             case CALIBRATION_COMPUTING:
-                WatchUi.pushView(m_computationProgressBar,
+                WatchUi.switchToView(m_computationProgressBar,
                     new ProgressBarBehaviorDelegate(),
                     WatchUi.SLIDE_IMMEDIATE);
                 break;
@@ -101,11 +109,10 @@ class Calibration
             case CALIBRATION_COMPUTING_EVALUATIONS:
             case CALIBRATION_COMPUTING_CHOOSE_SETTINGS:
                 self.updateProgressBar();
-                WatchUi.requestUpdate();
                 break;
             case CALIBRATION_DONE:
             case CALIBRATION_ABORT:
-                WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
+                break;
         }
 
     }
@@ -125,6 +132,7 @@ class Calibration
         m_settingToTest = 0;
         m_progression = 0;
         m_computationProgressBar.setProgress(m_progression);
+        m_computationProgressBar.setDisplayString(m_processingLabel);
     }
 
     function quantileIndex(iq)

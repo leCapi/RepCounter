@@ -110,6 +110,8 @@ class Hystersis
     function stepComputeQauntile()
     {
         m_cal.computeQuantiles();
+        // free big memory chunk
+        m_cal.m_dataRecordedSorted = null;
         m_cal.nextCalibrationStep();
     }
 
@@ -165,15 +167,19 @@ class Hystersis
 
     function stepCalibrationDone()
     {
-        self.resetContext();
         m_cal.m_timerComputation.stop();
+        self.resetContext();
+        m_cal.updateProgressBar();
+        m_settings.save();
+        if(Attention has :playTone){
+            Attention.playTone(Attention.TONE_SUCCESS);
+        }
     }
 
     function appendCalibrationData(data)
     {
         m_cal.m_dataRecorded.addAll(data);
         mergesort(data);
-        System.println(data);
         m_cal.m_dataRecordedSorted.insertSortedArray(data);
         if(m_cal.m_lastChunkNeeded){
             m_cal.m_lastChunkNeeded = false;

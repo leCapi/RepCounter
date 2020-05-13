@@ -10,9 +10,6 @@ class MenuCalibrationView extends WatchUi.View
     var m_textInstruction2;
     var m_instructionRules1;
     var m_instructionRules2;
-    var m_textComputing;
-    var m_textCalibrationDone;
-    var m_textCalibrationAbort;
 
     var m_unitRepetition;
 
@@ -22,9 +19,6 @@ class MenuCalibrationView extends WatchUi.View
     {
         View.initialize();
         m_hyst = Application.getApp().m_hysteresis;
-
-        m_textCalibrationDone = WatchUi.loadResource(Rez.Strings.menu_calibration_ok);
-        m_textCalibrationAbort = WatchUi.loadResource(Rez.Strings.menu_calibration_abort);
 
         var instructions1 = WatchUi.loadResource(Rez.Strings.menu_calibration_instructions_1);
         m_textInstruction1 = new WatchUi.TextArea({
@@ -95,24 +89,6 @@ class MenuCalibrationView extends WatchUi.View
             Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
     }
 
-    function display_calibration_done(dc)
-    {
-        dc.drawText(g_XMid,
-            g_YMid,
-            Gfx.FONT_LARGE,
-            m_textCalibrationDone,
-            Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
-    }
-
-    function display_calibration_abort(dc)
-    {
-        dc.drawText(g_XMid,
-            g_YMid,
-            Gfx.FONT_LARGE,
-            m_textCalibrationAbort,
-            Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
-    }
-
     function onUpdate(dc)
     {
         View.onUpdate(dc);
@@ -127,19 +103,6 @@ class MenuCalibrationView extends WatchUi.View
                 break;
             case CALIBRATION_RUNNING:
                 display_calibration_running(dc);
-                break;
-            case CALIBRATION_COMPUTING:
-            case CALIBRATION_COMPUTING_QUANTILE:
-            case CALIBRATION_COMPUTING_PREPARE_EVALUATIONS:
-            case CALIBRATION_COMPUTING_EVALUATIONS:
-            case CALIBRATION_COMPUTING_CHOOSE_SETTINGS:
-                // handled by a progressBar view
-                break;
-            case CALIBRATION_DONE:
-                display_calibration_done(dc);
-                break;
-            case CALIBRATION_ABORT:
-                display_calibration_abort(dc);
                 break;
         }
 
@@ -231,24 +194,6 @@ class MenuCalibrationInputDelegate extends WatchUi.InputDelegate
         return false;
     }
 
-    function handleKeyCalibrationComputing(key)
-    {
-        return true;
-    }
-
-    function handleKeyCalibrationDone(key)
-    {
-        switch (key)
-        {
-            case KEY_ENTER:
-            case KEY_ESC:
-                m_hyst.m_cal.reset();
-                WatchUi.popView(WatchUi.SLIDE_IMMEDIATE);
-                return true;
-        }
-        return false;
-    }
-
     function onKey(evt)
     {
         var key = evt.getKey();
@@ -259,15 +204,6 @@ class MenuCalibrationInputDelegate extends WatchUi.InputDelegate
                 return handleKeyCalibrationNotRunning(key);
             case CALIBRATION_RUNNING:
                 return handleKeyCalibrationRunning(key);
-            case CALIBRATION_COMPUTING:
-            case CALIBRATION_COMPUTING_QUANTILE:
-            case CALIBRATION_COMPUTING_PREPARE_EVALUATIONS:
-            case CALIBRATION_COMPUTING_EVALUATIONS:
-            case CALIBRATION_COMPUTING_CHOOSE_SETTINGS:
-                return handleKeyCalibrationComputing(key);
-            case CALIBRATION_DONE:
-            case CALIBRATION_ABORT:
-                return handleKeyCalibrationDone(key);
         }
 
         return false;
@@ -286,7 +222,11 @@ class ProgressBarBehaviorDelegate extends WatchUi.BehaviorDelegate
 
     function onBack()
     {
-        m_hyst.abortCalibration();
+        if (m_hyst.m_cal.m_state == CALIBRATION_DONE){
+            m_hyst.m_cal.reset();
+        } else {
+            m_hyst.abortCalibration();
+        }
         return true;
     }
 }
