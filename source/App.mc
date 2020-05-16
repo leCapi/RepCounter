@@ -51,7 +51,6 @@ class SportSession
     var m_timeStampLastLap;
     var m_setCounter;
     var m_totalNbRep;
-    var m_stateToResume;
 
     private var m_totalRepField;
     private var m_highThresholdField;
@@ -68,7 +67,6 @@ class SportSession
     function reset()
     {
         m_state = STATE_RUN;
-        m_stateToResume = STATE_REST;
         m_activitySession = null;
         m_timeStampLastLap = 0;
         m_setCounter = 1;
@@ -78,14 +76,11 @@ class SportSession
     function pauseActivity()
     {
         m_activitySession.stop();
-        m_stateToResume = m_state;
-        m_state = STATE_REST;
     }
 
     function resumeActivity()
     {
         m_activitySession.start();
-        m_state = m_stateToResume;
     }
 
     function discardActivity()
@@ -108,7 +103,7 @@ class SportSession
 
     function endRunSet()
     {
-        if(m_stateToResume == STATE_RUN) {
+        if(m_state == STATE_RUN) {
             self.lap();
         }
     }
@@ -236,7 +231,6 @@ class SportSession
             var elapsedTimeInSecond = convertTimeStampToSecond(elapsedTime);
             m_restField.setData(elapsedTimeInSecond);
             m_activitySession.stop();
-            System.println("SAVE");
             activitySaved = m_activitySession.save();
             self.reset();
             Application.getApp().resetCounterContext();
