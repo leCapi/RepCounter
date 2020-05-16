@@ -11,7 +11,7 @@
   <string id="menu_low_threshold">Low Threshold</string>
 
   <string id="menu_calibration_instructions_1">Press start to calibrate the thresholds.</string>
-  <string id="menu_calibration_instructions_2"> Press start if done before timer end.</string>
+  <string id="menu_calibration_instructions_2"> Press start if done before timer ends.</string>
   <string id="menu_calibration_instructions_3">Do </string>
   <string id="menu_calibration_instructions_4"> reps to calibrate.</string>
   <string id="menu_calibration_computing">Computing...</string>
