@@ -57,49 +57,6 @@ function isArraySorted(array)
     return true;
 }
 
-// this class aims to avoid the Watchdog Tripped
-// it can perform a merge in several steps
-const MERGER_NB_LOOP_PER_CYCLE = 75;
-class MergeSorter
-{
-    var m_iterator;
-    var m_arrayToSort;
-    var m_tmpArray;
-    var m_li;
-    var m_loop = 1;
-
-
-    function initialize(array)
-    {
-        self.m_iterator = 0;
-        self.m_arrayToSort = array;
-        self.m_tmpArray = copyArray(array);
-        self.m_li = array.size() - 1;
-    }
-
-    function nbLoopNeeded()
-    {
-        return Math.ceil(Math.log(m_arrayToSort.size(),2)).toNumber();
-    }
-
-    function sortingDone()
-    {
-        return m_loop > m_li;
-    }
-
-    function sortIterate()
-    {
-        for (var i = 0; i < m_li; i += 2*m_loop)
-        {
-            var from = i;
-            var mid = i + m_loop - 1;
-            var to = min(i + 2*m_loop - 1, m_li);
-            merge(m_arrayToSort, m_tmpArray, from, mid, to);
-        }
-        m_loop = 2*m_loop;
-    }
-}
-
 // https://www.techiedelight.com/iterative-merge-sort-algorithm-bottom-up/
 function mergesort(A)
 {

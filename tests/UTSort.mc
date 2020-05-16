@@ -53,28 +53,3 @@ function tMergeSort(logger)
 
     return true;
 }
-
-(:test)
-function tMergeSorterClass(logger)
-{
-    var array = [898, 90889, -744, 1234, 2, 392, -33, 90, 5, 888,
-        111, -7, 876, 401, 66, -4, 8, 8];
-
-    var sorter = new MergeSorter(array);
-    var nbLoop = sorter.nbLoopNeeded();
-    Test.assertEqualMessage(nbLoop, 5, "expected " + 5 + " got " + nbLoop);
-    Test.assertEqual(sorter.sortingDone(), false);
-    sorter.sortIterate();
-    Test.assertEqual(sorter.sortingDone(), false);
-    sorter.sortIterate();
-    Test.assertEqual(sorter.sortingDone(), false);
-    sorter.sortIterate();
-    Test.assertEqual(sorter.sortingDone(), false);
-    sorter.sortIterate();
-    Test.assertEqual(sorter.sortingDone(), false);
-    sorter.sortIterate();
-    Test.assertEqualMessage(sorter.sortingDone(), true, "sort seems failed");
-    Test.assertEqualMessage(isArraySorted(sorter.m_arrayToSort), true, "sort failed");
-
-    return true;
-}

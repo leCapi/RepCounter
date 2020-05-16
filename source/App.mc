@@ -293,7 +293,6 @@ class App extends Application.AppBase
 
     function saveActivity()
     {
-//        m_session.endRunSet();
         var activitySaved = m_session.save();
         if(Attention has :playTone && !activitySaved){
             Attention.playTone(Attention.TONE_ERROR);
