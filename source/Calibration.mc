@@ -12,11 +12,12 @@ enum
     CALIBRATION_RUNNING = 1,
     CALIBRATION_COMPUTING = 2,
     CALIBRATION_COMPUTING_QUANTILE = 3,
-    CALIBRATION_COMPUTING_PREPARE_EVALUATIONS = 4,
-    CALIBRATION_COMPUTING_EVALUATIONS = 5,
-    CALIBRATION_COMPUTING_CHOOSE_SETTINGS = 6,
-    CALIBRATION_DONE = 7,
-    CALIBRATION_ABORT = 8
+    CALIBRATION_COMPUTING_FREE_MEMORY = 4,
+    CALIBRATION_COMPUTING_PREPARE_EVALUATIONS = 5,
+    CALIBRATION_COMPUTING_EVALUATIONS = 6,
+    CALIBRATION_COMPUTING_CHOOSE_SETTINGS = 7,
+    CALIBRATION_DONE = 8,
+    CALIBRATION_ABORT = 9
 }
 
 const maxCalibrationClockCount = 20;
@@ -170,8 +171,8 @@ class Calibration
 
     function prepareSettings()
     {
-        var listLQ = [20, 22, 25];
-        var listHQ = [75, 80, 85, 90];
+        var listLQ = [20, 22, 24, 26, 28, 30];
+        var listHQ = [75, 80, 82, 84, 86, 88, 90];
         for(var i = 0; i < listLQ.size(); i++) {
             for(var j = 0; j < listHQ.size(); j++) {
                 var lQ = listLQ[i];
@@ -193,6 +194,7 @@ class Calibration
             time.sec.format("%02d") +
             " : calibration results"
         );
+        System.println("> quantiles of recorded data (mG) :");
         System.println(
             "q1:" + self.quantileValue(1) +
             " q10:" + self.quantileValue(10) +
@@ -207,6 +209,7 @@ class Calibration
             " q100:" + self.quantileValue(100)
         );
 
+        System.println("> QuantileSpread/ValueSpread/Score (*best)");
         for(var i = 0; i<m_settingsList.size(); i++)
         {
             System.println(m_settingsList[i].toString());

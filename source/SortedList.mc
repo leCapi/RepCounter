@@ -21,6 +21,18 @@ class SortedList
         m_length = 0;
     }
 
+    function free()
+    {
+        var it = m_first;
+        m_first = null;
+        for(var i = 0; i < m_length; i++)
+        {
+            var next = it.m_next;
+            it.m_next = null;
+            it = next;
+        }
+    }
+
     function size()
     {
         return m_length;

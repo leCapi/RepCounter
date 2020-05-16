@@ -1,8 +1,18 @@
 using Toybox.Application;
 using Toybox.FitContributor;
 using Toybox.Sensor;
+using Toybox.System;
 using Toybox.Timer;
 using Toybox.WatchUi;
+
+function dumpStats(place)
+{
+    var stats = System.getSystemStats();
+    var clock = System.getTimer();
+    System.println(">>> stats " + place + " " + clock);
+    System.println("used / total memory : " +
+        stats.usedMemory + " / " + stats.totalMemory);
+}
 
 public const SAMPLERATE_ACCELERATION = 25;
 public const DEFAULT_CALIBRATION_NUMBER_REPS = 10;
@@ -98,7 +108,7 @@ class SportSession
 
     function endRunSet()
     {
-        if( m_state == STATE_RUN) {
+        if(m_stateToResume == STATE_RUN) {
             self.lap();
         }
     }
@@ -226,6 +236,7 @@ class SportSession
             var elapsedTimeInSecond = convertTimeStampToSecond(elapsedTime);
             m_restField.setData(elapsedTimeInSecond);
             m_activitySession.stop();
+            System.println("SAVE");
             activitySaved = m_activitySession.save();
             self.reset();
             Application.getApp().resetCounterContext();
@@ -288,14 +299,10 @@ class App extends Application.AppBase
 
     function saveActivity()
     {
-        m_session.endRunSet();
+//        m_session.endRunSet();
         var activitySaved = m_session.save();
-        if(Attention has :playTone){
-            if(activitySaved) {
-                Attention.playTone(Attention.TONE_SUCCESS);
-            } else {
-                Attention.playTone(Attention.TONE_ERROR);
-            }
+        if(Attention has :playTone && !activitySaved){
+            Attention.playTone(Attention.TONE_ERROR);
         }
         return activitySaved;
     }

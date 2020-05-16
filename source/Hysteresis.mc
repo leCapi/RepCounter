@@ -92,6 +92,9 @@ class Hystersis
             case CALIBRATION_COMPUTING_QUANTILE:
                 self.stepComputeQauntile();
                 break;
+            case CALIBRATION_COMPUTING_FREE_MEMORY:
+                self.stepFreeMemory();
+                break;
             case CALIBRATION_COMPUTING_PREPARE_EVALUATIONS:
                 self.stepPrepareEvaluations();
                 break;
@@ -110,8 +113,12 @@ class Hystersis
     function stepComputeQauntile()
     {
         m_cal.computeQuantiles();
-        // free big memory chunk
-        m_cal.m_dataRecordedSorted = null;
+        m_cal.nextCalibrationStep();
+    }
+
+    function stepFreeMemory()
+    {
+        m_cal.m_dataRecordedSorted.free();
         m_cal.nextCalibrationStep();
     }
 
@@ -171,9 +178,6 @@ class Hystersis
         self.resetContext();
         m_cal.updateProgressBar();
         m_settings.save();
-        if(Attention has :playTone){
-            Attention.playTone(Attention.TONE_SUCCESS);
-        }
     }
 
     function appendCalibrationData(data)

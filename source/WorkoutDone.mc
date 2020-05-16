@@ -1,8 +1,6 @@
 using Toybox.Graphics as Gfx;
 using Toybox.WatchUi;
 
-const TIMEOUT_AUTO_RETURN = 3000;
-
 class WorkoutDoneView extends WatchUi.View
 {
     var m_message;
