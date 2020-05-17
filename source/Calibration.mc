@@ -1,6 +1,7 @@
 using Toybox.Application;
 using Toybox.Math;
 using Toybox.System;
+using Toybox.Time;
 using Toybox.Timer;
 using Toybox.WatchUi;
 
@@ -171,8 +172,8 @@ class Calibration
 
     function prepareSettings()
     {
-        var listLQ = [20, 22, 24, 26, 28, 30];
-        var listHQ = [75, 80, 82, 84, 86, 88, 90];
+        var listLQ = [20, 22, 24, 26, 28, 30, 32];
+        var listHQ = [80, 82, 84, 86, 88, 90, 92, 94];
         for(var i = 0; i < listLQ.size(); i++) {
             for(var j = 0; j < listHQ.size(); j++) {
                 var lQ = listLQ[i];
@@ -187,8 +188,12 @@ class Calibration
 
     function dumpSettings()
     {
+        var today = new Time.Moment(Time.today().value());
+        var now = Time.Gregorian.info(today, Time.FORMAT_SHORT);
         var time = System.getClockTime();
+
         System.println(
+            now.year + "." + now.month.format("%02d") + "." + now.day.format("%02d") + " " +
             time.hour.format("%02d") + ":" +
             time.min.format("%02d") + ":" +
             time.sec.format("%02d") +
