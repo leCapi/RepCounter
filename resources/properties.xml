@@ -1,5 +1,5 @@
 <properties>
 	<!-- User preferences -->
-	<property id="high_threshold" type="number">2400</property>
-	<property id="low_threshold" type="number">1200</property>
+	<property id="high_threshold" type="number">1900</property>
+	<property id="low_threshold" type="number">1000</property>
 </properties>
