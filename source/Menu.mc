@@ -80,6 +80,12 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         self.m_appSettings = settings;
     }
 
+    function onHide()
+    {
+        m_timer.stop();
+        return true;
+    }
+
     function onTap(evt) {
         return false;
     }
