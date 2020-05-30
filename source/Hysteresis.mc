@@ -9,6 +9,7 @@ class Hystersis
     var m_hysteresisState;
     var m_lastPoint;
     var m_hysteresisCycles;
+    var m_soundCounter;
 
     var m_cal;
 
@@ -156,7 +157,7 @@ class Hystersis
     function stepComputeChooseSettings()
     {
         var settingsListSize = m_cal.m_settingsList.size();
-        if(settingsListSize == 0){
+        if(settingsListSize == 0) {
             return;
         }
         var chosenSettings = m_cal.m_settingsList[0];
@@ -196,6 +197,7 @@ class Hystersis
         m_hysteresisState = THRESHOLD_LOW;
         m_lastPoint = -1;
         m_hysteresisCycles = 0;
+        m_soundCounter = 0;
     }
 
     function compute(array)
@@ -225,6 +227,10 @@ class Hystersis
                     break;
             }
             m_lastPoint = newPoint;
+        }
+        if(m_settings.m_soundCounterSize!=0)
+        {
+            m_soundCounter = m_hysteresisCycles / m_settings.m_soundCounterSize;
         }
     }
 }

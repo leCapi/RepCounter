@@ -26,5 +26,7 @@ The calibration can be adjusted if needed. For example if too much repetitions a
 The main information displayed is the number of repetition detected. The application alternate active phase and rest phase. The user can change the phase by pressing lap key.
 One lap contains two phases : the set number is increment every two pressures on the lap key. The **hysteresis state** show the last threshold crossed : if the square is above the line it was a high threshold else it was a low threshold.
 
+The application a emits sound every 50(tunable value) repetitions. Tuning this value to 0 in Sound Counter menu disable this feature.
+
 ![alt text](./misc/main_run_explained.png)
 ![alt text](./misc/main_rest_explained.png)

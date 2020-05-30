@@ -2,4 +2,5 @@
 	<menu-item id="menu_calibration" label="@Strings.menu_calibration" />
 	<menu-item id="menu_high_threshold" label="@Strings.menu_high_threshold" />
 	<menu-item id="menu_low_threshold" label="@Strings.menu_low_threshold" />
+	<menu-item id="menu_sound_counter" label="@Strings.menu_sound_counter" />
 </menu>

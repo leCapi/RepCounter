@@ -8,11 +8,13 @@ class Settings
 {
     var m_highThresholdValue;
     var m_lowThresholdValue;
+    var m_soundCounterSize;
 
     function initialize()
     {
         m_lowThresholdValue = Application.Properties.getValue("low_threshold");
         m_highThresholdValue = Application.Properties.getValue("high_threshold");
+        m_soundCounterSize = Application.Properties.getValue("sound_counter");
     }
 
     function save()
@@ -20,6 +22,7 @@ class Settings
         var app = Application.getApp();
         app.setProperty("high_threshold", m_highThresholdValue);
         app.setProperty("low_threshold", m_lowThresholdValue);
+        app.setProperty("sound_counter", m_soundCounterSize);
     }
 }
 

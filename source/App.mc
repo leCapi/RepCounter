@@ -326,7 +326,11 @@ class App extends Application.AppBase
     {
         if(data has :accelerometerData and data.accelerometerData != null) {
             if(m_session.m_activitySession != null && m_session.isRunning()) {
+                var soundCounter = m_hysteresis.m_soundCounter;
                 m_hysteresis.compute(data.accelerometerData.power);
+                if(Attention has :playTone && soundCounter < m_hysteresis.m_soundCounter) {
+                    Attention.playTone(Attention.TONE_LOUD_BEEP);
+                }
             } else if(m_hysteresis.isRecordingForCalibration()){
                 m_hysteresis.appendCalibrationData(data.accelerometerData.power);
             }

@@ -8,6 +8,9 @@ public const INC_TICK_SETTING_FAST = 20;
 
 var g_threshodCurrentSetting;
 
+var g_soundCSIndex;
+var g_soundCSPossibleValues = [0, 10, 20, 50, 100, 200];
+
 class EditThresholdView extends WatchUi.View
 {
     protected var m_thresholdType;
@@ -201,6 +204,132 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
     }
 }
 
+class EditSoundCounterView extends WatchUi.View
+{
+    protected var m_appSettings;
+    var m_counterSizeSelected;
+
+    function initialize(settings)
+    {
+        View.initialize();
+        self.m_appSettings = settings;
+        g_soundCSIndex = 0;
+        for (var i = 0; i < g_soundCSPossibleValues.size(); i++)
+        {
+            if (settings.m_soundCounterSize == g_soundCSPossibleValues[i])
+            {
+                g_soundCSIndex = i;
+                break;
+            }
+        }
+    }
+
+    function onUpdate(dc)
+    {
+        View.onUpdate(dc);
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
+        dc.clear();
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+        var fontThresholdValue = Gfx.FONT_NUMBER_THAI_HOT;
+        var fontUnit = Gfx.FONT_LARGE;
+        var spaceNeeded = dc.getFontHeight(fontUnit);
+        dc.drawText(g_XMid, g_YMid, fontThresholdValue, g_soundCSPossibleValues[g_soundCSIndex], Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, "reps", Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
+
+        return true;
+    }
+
+    function onLayout(dc)
+    {
+        return false;
+    }
+
+    function onShow()
+    {
+      return false;
+    }
+}
+
+class EditSoundCounterDelegate extends WatchUi.InputDelegate
+{
+    protected var m_appSettings;
+
+    function initialize(settings)
+    {
+        InputDelegate.initialize();
+        self.m_appSettings = settings;
+    }
+
+    function onHide()
+    {
+        return false;
+    }
+
+    function onTap(evt) {
+        return false;
+    }
+
+    function onHold(evt) {
+        return false;
+    }
+
+    function onRelease(evt) {
+        return false;
+    }
+
+    function onSwipe(evt) {
+        return false;
+    }
+
+    function saveSoundCounterSize(newSoundCounterSize)
+    {
+        m_appSettings.m_soundCounterSize = g_soundCSPossibleValues[newSoundCounterSize];
+    }
+
+    function decreaseSoundCounterSize()
+    {
+        g_soundCSIndex--;
+        if(g_soundCSIndex < 0)
+        {
+            g_soundCSIndex = 0;
+        }
+        WatchUi.requestUpdate();
+    }
+
+    function increaseSoundCounterSize()
+    {
+        g_soundCSIndex++;
+        if(g_soundCSIndex >= g_soundCSPossibleValues.size())
+        {
+            g_soundCSIndex = g_soundCSPossibleValues.size() - 1;
+        }
+        WatchUi.requestUpdate();
+    }
+
+    function onKey(evt)
+    {
+        var key = evt.getKey();
+        switch (key)
+        {
+            case KEY_ENTER:
+                saveSoundCounterSize(g_soundCSIndex);
+                WatchUi.popView(WatchUi.SLIDE_RIGHT);
+                return true;
+            case KEY_ESC:
+                WatchUi.popView(WatchUi.SLIDE_RIGHT);
+                return true;
+            case KEY_UP:
+                increaseSoundCounterSize();
+                return true;
+            case KEY_DOWN:
+                decreaseSoundCounterSize();
+                return true;
+
+        }
+        return false;
+    }
+}
+
 class MainMenuInputDelegate extends WatchUi.MenuInputDelegate
 {
     function initialize()
@@ -224,6 +353,10 @@ class MainMenuInputDelegate extends WatchUi.MenuInputDelegate
         }else if (item == :menu_low_threshold){
             WatchUi.pushView(new EditThresholdView(THRESHOLD_LOW, settings),
                 new EditThresholdInputDelegate(THRESHOLD_LOW, settings),
+                WatchUi.SLIDE_LEFT);
+        } else if (item == :menu_sound_counter) {
+            WatchUi.pushView(new EditSoundCounterView(settings),
+                new EditSoundCounterDelegate(settings),
                 WatchUi.SLIDE_LEFT);
         }
     }

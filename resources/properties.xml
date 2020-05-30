@@ -2,4 +2,5 @@
 	<!-- User preferences -->
 	<property id="high_threshold" type="number">1900</property>
 	<property id="low_threshold" type="number">1000</property>
+	<property id="sound_counter" type="number">50</property>
 </properties>
