@@ -1,0 +1,4 @@
+* v1.1.0:
+  - Add a sound counter for set. It sounds every 50(tunnable value) repetitions.
+* v1.0.0:
+  - Initial Release
