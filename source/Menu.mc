@@ -9,7 +9,7 @@ public const INC_TICK_SETTING_FAST = 20;
 var g_threshodCurrentSetting;
 
 var g_soundCSIndex;
-var g_soundCSPossibleValues = [0, 10, 20, 50, 100, 200];
+const g_soundCSPossibleValues = [0, 10, 20, 50, 100, 200];
 
 class EditThresholdView extends WatchUi.View
 {
@@ -92,19 +92,23 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         return true;
     }
 
-    function onTap(evt) {
+    function onTap(evt)
+    {
         return false;
     }
 
-    function onHold(evt) {
+    function onHold(evt)
+    {
         return false;
     }
 
-    function onRelease(evt) {
+    function onRelease(evt)
+    {
         return false;
     }
 
-    function onSwipe(evt) {
+    function onSwipe(evt)
+    {
         return false;
     }
 
@@ -269,19 +273,23 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
         return false;
     }
 
-    function onTap(evt) {
+    function onTap(evt)
+    {
         return false;
     }
 
-    function onHold(evt) {
+    function onHold(evt)
+    {
         return false;
     }
 
-    function onRelease(evt) {
+    function onRelease(evt)
+    {
         return false;
     }
 
-    function onSwipe(evt) {
+    function onSwipe(evt)
+    {
         return false;
     }
 
