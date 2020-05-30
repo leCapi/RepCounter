@@ -7,13 +7,13 @@ This applications aims to count repetitions of one single movement. It had been 
 
 The detection of the repetition rely on an hysteresis. A high acceleration value followed by a low acceleration value must be met to increment the repetition counter. The graph below illustrates it :
 
-![alt text](./misc/hysteresis.png)
+![alt text](./misc/images/hysteresis.png)
 
 The precision of the application depends on the calibration of the two thresholds of the hysteresis. The thresholds(high and low) can be shown and edited in main menu (accessible with a long pressure on up key).
 
 An automatic calibration algorithm is provided in main menu. Choose calibration in main menu to access it. The screen below will be displayed :
 
-![alt text](./misc/calibration.png)
+![alt text](./misc/images/calibration.png)
 
 On the screen above the user can configure the number of repetitions to do by pressing up or down keys. The default value is 10. When the user presses on the start button he will have to do the number of repetitions he selected in less than 20 seconds. The computation of the thresholds will start when the user presses start again or when the 20 seconds are gone. The application will try several values of thresholds and choose the best. The best setting is the one which detected the closest number of repetitions the user entered. If several settings perform as well then the setting with the biggest spread between the thresholds is chosen. In case of equality the setting with the highest high threshold is chosen.
 
@@ -28,5 +28,5 @@ One lap contains two phases : the set number is increment every two pressures on
 
 The application a emits sound every 50(tunable value) repetitions. Tuning this value to 0 in Sound Counter menu disable this feature.
 
-![alt text](./misc/main_run_explained.png)
-![alt text](./misc/main_rest_explained.png)
+![alt text](./misc/images/main_run_explained.png)
+![alt text](./misc/images/main_rest_explained.png)
