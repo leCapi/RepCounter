@@ -15,13 +15,16 @@ class EditThresholdView extends WatchUi.View
 {
     protected var m_thresholdType;
     protected var m_appSettings;
+    protected var m_unit;
 
     function initialize(thresholdType, settings)
     {
         View.initialize();
         self.m_thresholdType = thresholdType;
         self.m_appSettings = settings;
+        self.m_unit = WatchUi.loadResource(Rez.Strings.ciq_unit_acceleration);
         g_threshodCurrentSetting = loadThreshold();
+
     }
 
     function loadThreshold()
@@ -49,7 +52,7 @@ class EditThresholdView extends WatchUi.View
         var fontUnit = Gfx.FONT_LARGE;
         var spaceNeeded = dc.getFontHeight(fontUnit);
         dc.drawText(g_XMid, g_YMid, fontThresholdValue, g_threshodCurrentSetting, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
-        dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, "mG", Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, m_unit, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
 
         return true;
     }
@@ -207,7 +210,7 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
 class EditSoundCounterView extends WatchUi.View
 {
     protected var m_appSettings;
-    var m_counterSizeSelected;
+    protected var m_unit;
 
     function initialize(settings)
     {
@@ -222,6 +225,7 @@ class EditSoundCounterView extends WatchUi.View
                 break;
             }
         }
+        self.m_unit = WatchUi.loadResource(Rez.Strings.ciq_unit_rep);
     }
 
     function onUpdate(dc)
@@ -234,7 +238,7 @@ class EditSoundCounterView extends WatchUi.View
         var fontUnit = Gfx.FONT_LARGE;
         var spaceNeeded = dc.getFontHeight(fontUnit);
         dc.drawText(g_XMid, g_YMid, fontThresholdValue, g_soundCSPossibleValues[g_soundCSIndex], Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
-        dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, "reps", Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, m_unit, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
 
         return true;
     }
