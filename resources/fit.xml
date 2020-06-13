@@ -5,6 +5,7 @@
       sortOrder = "0"
       precision="0"
       displayInActivityLaps="false"
+      displayInActivitySummary="true"
       dataLabel="@Strings.ciq_all_rep_counter"
       unitLabel="@Strings.ciq_unit_rep"/>
     <fitField id="1"
@@ -33,6 +34,7 @@
       sortOrder = "10"
       precision="0"
       displayInActivityLaps="false"
+      displayInActivitySummary="true"
       dataLabel="@Strings.ciq_threshold_high"
       unitLabel="@Strings.ciq_unit_acceleration"/>
     <fitField id="11"
@@ -40,6 +42,7 @@
       sortOrder = "11"
       precision="0"
       displayInActivityLaps="false"
+      displayInActivitySummary="true"
       dataLabel="@Strings.ciq_threshold_low"
       unitLabel="@Strings.ciq_unit_acceleration"/>
   </fitContributions>

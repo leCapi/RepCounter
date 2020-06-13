@@ -1,4 +1,7 @@
+* v1.1.1:
+  - Sound Counter renamed in Audio Counter
+  - The total number of repetitions and threshold configuration are now displayed correctly in ConnectIQ
 * v1.1.0:
-  - Add a sound counter for set. It sounds every 50(tunnable value) repetitions.
+  - Add a sound counter for set. It sounds every 50(tunable value) repetitions.
 * v1.0.0:
   - Initial Release

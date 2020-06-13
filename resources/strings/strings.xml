@@ -9,7 +9,7 @@
   <string id="menu_calibration">Calibration</string>
   <string id="menu_high_threshold">High Threshold</string>
   <string id="menu_low_threshold">Low Threshold</string>
-  <string id="menu_sound_counter">Sound Counter</string>
+  <string id="menu_sound_counter">Audio Counter</string>
 
   <string id="menu_calibration_instructions_1">Press start to calibrate the thresholds.</string>
   <string id="menu_calibration_instructions_2"> Press start if done before timer ends.</string>
