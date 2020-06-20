@@ -172,8 +172,8 @@ class Calibration
 
     function prepareSettings()
     {
-        var listLQ = [20, 22, 24, 26, 28, 30, 32];
-        var listHQ = [80, 82, 84, 86, 88, 90, 92, 94];
+        var listLQ = [14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
+        var listHQ = [78, 80, 82, 84, 86, 88, 90, 92, 94];
         for(var i = 0; i < listLQ.size(); i++) {
             for(var j = 0; j < listHQ.size(); j++) {
                 var lQ = listLQ[i];
