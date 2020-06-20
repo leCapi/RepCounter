@@ -1,3 +1,5 @@
+* v1.2.1:
+  - Revert activity type to generic sport
 * v1.2.0:
   - Improve calibration (more thresholds are tested)
   - Activity type is now training : it should improve display on ConnectIQ

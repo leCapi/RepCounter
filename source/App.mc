@@ -166,8 +166,8 @@ class SportSession
         m_activitySession = ActivityRecording.createSession(
             {
             :name => recordName,
-            :sport => ActivityRecording.SPORT_TRAINING,
-            :subSport => ActivityRecording.SUB_SPORT_EXERCISE
+            :sport => ActivityRecording.SPORT_GENERIC,
+            :subSport => ActivityRecording.SUB_SPORT_GENERIC
             });
         m_totalRepField = m_activitySession.createField("total_repetitions",
             FITFIELD_TOTAL_REPETITIONS,
