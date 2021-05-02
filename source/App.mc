@@ -4,6 +4,7 @@ using Toybox.Sensor;
 using Toybox.System;
 using Toybox.Timer;
 using Toybox.WatchUi;
+using Toybox.Attention;
 
 function dumpStats(place)
 {
@@ -250,6 +251,7 @@ class App extends Application.AppBase
     var m_hysteresis;
     var m_session;
     var m_lastHearthRate;
+    var m_vibeLap;
 
     function initialize()
     {
@@ -273,6 +275,7 @@ class App extends Application.AppBase
         m_hysteresis = new Hystersis();
         m_session = new SportSession();
         m_lastHearthRate = null;
+        m_vibeLap = [new Attention.VibeProfile(100, 2000)];
     }
 
     function pauseActivity()
@@ -328,8 +331,13 @@ class App extends Application.AppBase
             if(m_session.m_activitySession != null && m_session.isRunning()) {
                 var soundCounter = m_hysteresis.m_soundCounter;
                 m_hysteresis.compute(data.accelerometerData.power);
-                if(Attention has :playTone && soundCounter < m_hysteresis.m_soundCounter) {
-                    Attention.playTone(Attention.TONE_LOUD_BEEP);
+                if (soundCounter < m_hysteresis.m_soundCounter)
+                {
+                    if(Attention has :playTone) {
+                      Attention.playTone(Attention.TONE_LOUD_BEEP);
+                  } else if (Attention has :vibrate) {
+                      Attention.vibrate(m_vibeLap);
+                  }
                 }
             } else if(m_hysteresis.isRecordingForCalibration()){
                 m_hysteresis.appendCalibrationData(data.accelerometerData.power);

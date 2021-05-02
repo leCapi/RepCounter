@@ -26,7 +26,9 @@ The calibration can be adjusted if needed. For example if too much repetitions a
 The main information displayed is the number of repetition detected. The application alternate active phase and rest phase. The user can change the phase by pressing lap key.
 One lap contains two phases : the set number is increment every two pressures on the lap key. The **hysteresis state** show the last threshold crossed : if the square is above the line it was a high threshold else it was a low threshold.
 
-The application a emits sound every 50(tunable value) repetitions. Tuning this value to 0 in Audio Counter menu disable this feature.
+The application a emits sound every 50(tunable value) repetitions. Tuning this value to 0 in Audio Counter menu disable this feature. A device without speaker will vibrate.
 
 ![alt text](./misc/images/main_run_explained.png)
 ![alt text](./misc/images/main_rest_explained.png)
+
+When editing thresholds on devices like the Venu or the Vivoactive which provide a touch screen interface : a tap on the screen change the direction(+/-) of the increment and holding the screen add increments to the threshold which is edited.

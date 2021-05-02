@@ -8,6 +8,12 @@ public const INC_TICK_SETTING_FAST = 20;
 
 var g_threshodCurrentSetting;
 
+enum
+{
+    TOUCH_PLUS = 0,
+    TOUCH_MINUS = 1
+}
+
 var g_soundCSIndex;
 const g_soundCSPossibleValues = [0, 10, 20, 50, 100, 200];
 
@@ -70,11 +76,15 @@ class EditThresholdView extends WatchUi.View
 
 class EditThresholdInputDelegate extends WatchUi.InputDelegate
 {
+    const INC_UPDATE_INTERVAL_MS = 350;
+
     protected var m_thresholdType;
     protected var m_timer;
     protected var m_alreadyInc;
     protected var m_alreadyDec;
     protected var m_appSettings;
+    protected var m_touchState;
+
 
     function initialize(thresholdType, settings)
     {
@@ -84,6 +94,7 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         self.m_alreadyInc = false;
         self.m_alreadyDec = false;
         self.m_appSettings = settings;
+        self.m_touchState = TOUCH_PLUS;
     }
 
     function onHide()
@@ -94,17 +105,36 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
 
     function onTap(evt)
     {
-        return false;
+        if (m_touchState == TOUCH_PLUS)
+        {
+            m_touchState = TOUCH_MINUS;
+        } else {
+            m_touchState = TOUCH_PLUS;
+        }
+        return true;
     }
 
     function onHold(evt)
     {
+
+        switch (m_touchState)
+        {
+            case TOUCH_PLUS:
+                m_timer.stop();
+                m_timer.start(method(:incrmentThresholdFast), INC_UPDATE_INTERVAL_MS, true);
+                return true;
+            case TOUCH_MINUS:
+                m_timer.stop();
+                m_timer.start(method(:decrmentThresholdFast), INC_UPDATE_INTERVAL_MS, true);
+                return true;
+        }
         return false;
     }
 
     function onRelease(evt)
     {
-        return false;
+        m_timer.stop();
+        return true;
     }
 
     function onSwipe(evt)
@@ -170,16 +200,16 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
     function onKeyPressed(evt)
     {
         var key = evt.getKey();
-        var g_refreshTimeMain = 350;
+
         switch (key)
         {
             case KEY_UP:
                 m_timer.stop();
-                m_timer.start(method(:incrmentThresholdFast), g_refreshTimeMain, true);
+                m_timer.start(method(:incrmentThresholdFast), INC_UPDATE_INTERVAL_MS, true);
                 return true;
             case KEY_DOWN:
                 m_timer.stop();
-                m_timer.start(method(:decrmentThresholdFast), g_refreshTimeMain, true);
+                m_timer.start(method(:decrmentThresholdFast), INC_UPDATE_INTERVAL_MS, true);
                 return true;
         }
         return false;
@@ -268,17 +298,18 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
         self.m_appSettings = settings;
     }
 
-    function onHide()
-    {
-        return false;
-    }
-
     function onTap(evt)
     {
-        return false;
+        increaseSoundCounterSizeAndLoop();
+        return true;
     }
 
     function onHold(evt)
+    {
+        return false;
+    }
+
+    function onHide()
     {
         return false;
     }
@@ -314,6 +345,16 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
         if(g_soundCSIndex >= g_soundCSPossibleValues.size())
         {
             g_soundCSIndex = g_soundCSPossibleValues.size() - 1;
+        }
+        WatchUi.requestUpdate();
+    }
+
+    function increaseSoundCounterSizeAndLoop()
+    {
+        g_soundCSIndex++;
+        if(g_soundCSIndex >= g_soundCSPossibleValues.size())
+        {
+            g_soundCSIndex = 0;
         }
         WatchUi.requestUpdate();
     }
