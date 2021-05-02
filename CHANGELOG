@@ -1,3 +1,6 @@
+* v1.3.1:
+  - Add vivoactive support
+  - minimum API set to CIQ 3.1 (drop support for D2Charlie and descentmk1)
 * v1.3.0:
   - Add more devices and especially some touch devices like D2 or Venue
 * v1.2.2:
