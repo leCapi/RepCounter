@@ -1,3 +1,5 @@
+* v1.3.2:
+  - Update to CIQ SDK 4.0.5
 * v1.3.1:
   - Add vivoactive support
   - minimum API set to CIQ 3.1 (drop support for D2Charlie and descentmk1)
