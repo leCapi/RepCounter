@@ -5,8 +5,11 @@ using Toybox.System;
 using Toybox.Timer;
 using Toybox.WatchUi;
 using Toybox.Attention;
+using Toybox.Graphics;
+import Toybox.Lang;
 
-function dumpStats(place)
+
+function dumpStats(place as Lang.String) as Void
 {
     var stats = System.getSystemStats();
     var clock = System.getTimer();
@@ -18,7 +21,7 @@ function dumpStats(place)
 public const SAMPLERATE_ACCELERATION = 25;
 public const DEFAULT_CALIBRATION_NUMBER_REPS = 10;
 
-var g_fancyFont;
+var g_fancyFont as Graphics.FontType or Null;
 
 enum
 {
@@ -40,32 +43,32 @@ public const FITFIELD_REPETITIONS = 1;
 public const FITFIELD_SET_DURATION = 2;
 public const FITFIELD_SET_REST = 3;
 
-function convertTimeStampToSecond(timeStamp)
+function convertTimeStampToSecond(timeStamp as Number) as Float
 {
     return timeStamp/1000.0;
 }
 
 class SportSession
 {
-    var m_state;
-    var m_activitySession;
-    var m_timeStampLastLap;
-    var m_setCounter;
-    var m_totalNbRep;
+    var m_state as Number = STATE_RUN;
+    var m_activitySession as FitContributor.ActivityRecording.Session or Null;
+    var m_timeStampLastLap as Number = 0;
+    var m_setCounter as Number = 0;
+    var m_totalNbRep as Number = 0;
 
-    private var m_totalRepField;
-    private var m_highThresholdField;
-    private var m_lowThresholdField;
-    private var m_repField;
-    private var m_durationField;
-    private var m_restField;
+    private var m_totalRepField as FitContributor.Field or Null;
+    private var m_highThresholdField as FitContributor.Field or Null;
+    private var m_lowThresholdField as FitContributor.Field or Null;
+    private var m_repField as FitContributor.Field or Null;
+    private var m_durationField as FitContributor.Field or Null;
+    private var m_restField as FitContributor.Field or Null;
 
     function initialize()
     {
         reset();
     }
 
-    function reset()
+    function reset() as Void
     {
         m_state = STATE_RUN;
         m_activitySession = null;
@@ -74,56 +77,69 @@ class SportSession
         m_totalNbRep = 0;
     }
 
-    function pauseActivity()
+    function pauseActivity() as Void
     {
-        m_activitySession.stop();
+        if (m_activitySession != null)
+        {
+            m_activitySession.stop();
+        }
     }
 
-    function resumeActivity()
+    function resumeActivity() as Void
     {
-        m_activitySession.start();
+        if (m_activitySession != null)
+        {
+            m_activitySession.start();
+        }
     }
 
-    function discardActivity()
+    function discardActivity() as Void
     {
         m_activitySession.discard();
         self.reset();
     }
 
-    function isRunning()
+    function isRunning() as Boolean
     {
         return m_activitySession != null && m_activitySession.isRecording() &&
             m_state == STATE_RUN;
     }
 
-    function noActivity()
+    function noActivity() as Boolean
     {
         return m_activitySession == null;
     }
 
 
-    function endRunSet()
+    function endRunSet() as Void
     {
         if(m_state == STATE_RUN) {
             self.lap();
         }
     }
 
-    function computeCurrentStepLapTime()
+    function computeCurrentStepLapTime() as Number
     {
         var info = Activity.getActivityInfo();
-        var elapsedTime = (info.timerTime - m_timeStampLastLap);
+        var elapsedTime = -1;
+        if (info != null and info.timerTime != null)
+        {
+            var t = info.timerTime;
+            if (t!=null)
+            {
+                elapsedTime = (t - m_timeStampLastLap);
+            }
+        }
         return elapsedTime;
     }
 
-    function computeDisplayTime(total)
+    function computeDisplayTime(total as Boolean) as String
     {
         if(m_activitySession == null) {
             return "00:00";
         }
         var elapsedTimeM = 0;
         var elapsedTimeS = 0;
-        var res = "";
         var elapsedTime;
         if(total) {
             elapsedTime = Activity.getActivityInfo().timerTime / 1000;
@@ -138,7 +154,7 @@ class SportSession
         return formatedDuration;
     }
 
-    function lap()
+    function lap() as Void
     {
         var elapsedTime = computeCurrentStepLapTime();
         var elapsedTimeInSecond = convertTimeStampToSecond(elapsedTime);
@@ -160,7 +176,7 @@ class SportSession
         m_state = m_state? STATE_REST:STATE_RUN;
     }
 
-    function start()
+    function start() as Void
     {
         var recordName = WatchUi.loadResource(Rez.Strings.AppName);
 
@@ -168,7 +184,7 @@ class SportSession
             {
             :name => recordName,
             :sport => ActivityRecording.SPORT_GENERIC,
-            :subSport => ActivityRecording.SUB_SPORT_GENERIC
+            :subSport => ActivityRecording.SUB_SPORT_STRENGTH_TRAINING
             });
         m_totalRepField = m_activitySession.createField("total_repetitions",
             FITFIELD_TOTAL_REPETITIONS,
@@ -220,7 +236,7 @@ class SportSession
         m_activitySession.start();
     }
 
-    function save()
+    function save() as Boolean
     {
         self.endRunSet();
         var activitySaved = false;
@@ -240,7 +256,7 @@ class SportSession
         return activitySaved;
     }
 
-    function activityOnGoing()
+    function activityOnGoing() as Boolean
     {
         return m_activitySession != null;
     }
@@ -248,10 +264,10 @@ class SportSession
 
 class App extends Application.AppBase
 {
-    var m_hysteresis;
-    var m_session;
-    var m_lastHearthRate;
-    var m_vibeLap;
+    var m_hysteresis as Hystersis;
+    var m_session as SportSession;
+    var m_lastHearthRate as Number or Null;
+    var m_vibeLap as Array<Attention.VibeProfile>;
 
     function initialize()
     {
@@ -278,7 +294,7 @@ class App extends Application.AppBase
         m_vibeLap = [new Attention.VibeProfile(100, 2000)];
     }
 
-    function pauseActivity()
+    function pauseActivity() as Void
     {
         if(Attention has :playTone){
             Attention.playTone(Attention.TONE_STOP);
@@ -286,7 +302,7 @@ class App extends Application.AppBase
         m_session.pauseActivity();
     }
 
-    function resumeActivity()
+    function resumeActivity() as Void
     {
         if(Attention has :playTone){
             Attention.playTone(Attention.TONE_START);
@@ -294,7 +310,7 @@ class App extends Application.AppBase
         m_session.resumeActivity();
     }
 
-    function saveActivity()
+    function saveActivity() as Boolean
     {
         var activitySaved = m_session.save();
         if(Attention has :playTone && !activitySaved){
@@ -303,7 +319,7 @@ class App extends Application.AppBase
         return activitySaved;
     }
 
-    function discardActivity()
+    function discardActivity() as Void
     {
         if(Attention has :playTone){
             Attention.playTone(Attention.TONE_RESET);
@@ -312,7 +328,7 @@ class App extends Application.AppBase
         m_session.discardActivity();
     }
 
-    function startActivity()
+    function startActivity() as Void
     {
         if(Attention has :playTone){
             Attention.playTone(Attention.TONE_START);
@@ -320,12 +336,12 @@ class App extends Application.AppBase
         m_session.start();
     }
 
-    function resetCounterContext()
+    function resetCounterContext() as Void
     {
         m_hysteresis.resetContext();
     }
 
-    function onAccelerometerData(data)
+    function onAccelerometerData(data) as Void
     {
         if(data has :accelerometerData and data.accelerometerData != null) {
             if(m_session.m_activitySession != null && m_session.isRunning()) {
@@ -345,7 +361,7 @@ class App extends Application.AppBase
         }
     }
 
-    function onSensorEvent(data)
+    function onSensorEvent(data) as Void
     {
         if(data has :heartRate and data.heartRate != null) {
             m_lastHearthRate = data.heartRate;
@@ -361,7 +377,7 @@ class App extends Application.AppBase
         return [ new AppView(timerMainView), new AppDelegate(timerMainView) ];
     }
 
-    function onStop(state)
+    function onStop(state) as Void
     {
         m_hysteresis.m_settings.save();
     }

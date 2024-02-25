@@ -2,25 +2,27 @@ using Toybox.Activity;
 using Toybox.Application;
 using Toybox.Graphics as Gfx;
 using Toybox.Time;
+using Toybox.Timer;
 using Toybox.WatchUi as Ui;
+import Toybox.Lang;
 
 const NO_HR_DETECTED = "-";
 
-var g_XMid;
-var g_YMid;
-var g_refreshTimeMain = 1000;
+var g_XMid as Number = 0;
+var g_YMid as Number = 0;
+var g_refreshTimeMain as Number = 1000;
 
 class AppView extends Ui.View
 {
-    var m_refreshTimer;
+    var m_refreshTimer as Timer.Timer;
 
-    var m_timer_label;
-    var m_set_label;
-    var m_rest_msg;
+    var m_timer_label as Ui.Resource;
+    var m_set_label as Ui.Resource;
+    var m_rest_msg as Ui.Resource;
 
-    var m_topMargin;
+    var m_topMargin as Number;
 
-    function initialize(timer)
+    function initialize(timer as Time.Timer)
     {
         View.initialize();
         m_refreshTimer = timer;
@@ -30,31 +32,28 @@ class AppView extends Ui.View
         m_topMargin = 15;
     }
 
-    function NotifyDisplay()
+    function NotifyDisplay() as Void
     {
         WatchUi.requestUpdate();
     }
 
-    function onLayout(dc)
+    function onLayout(dc) as Void
     {
         g_XMid = dc.getWidth() / 2;
         g_YMid = dc.getHeight() / 2;
-        return true;
     }
 
-    function onShow()
+    function onShow() as Void
     {
         m_refreshTimer.start(method(:NotifyDisplay), g_refreshTimeMain, true);
-        return true;
     }
 
-    function onHide()
+    function onHide() as Void
     {
         m_refreshTimer.stop();
-        return false;
     }
 
-    function displayTime(dc)
+    function displayTime(dc as Gfx.Dc) as Void
     {
         var timeInfo = Time.Gregorian.info(Time.now(), Time.FORMAT_SHORT);
         var timeNow = Lang.format("$1$:$2$", [timeInfo.hour.format("%02d"), timeInfo.min.format("%02d")]);
@@ -63,7 +62,7 @@ class AppView extends Ui.View
         dc.drawText(g_XMid, dc.getHeight()- margin, font, timeNow, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
     }
 
-    function displayHR(dc)
+    function displayHR(dc as Gfx.Dc) as Void
     {
         var app = Application.getApp();
         var font = Gfx.FONT_TINY;
@@ -72,7 +71,7 @@ class AppView extends Ui.View
         dc.drawText(g_XMid, margin, font, hr, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
     }
 
-    function displayCounter(dc)
+    function displayCounter(dc as Gfx.Dc) as Void
     {
         var app = Application.getApp();
         var repCounter = app.m_hysteresis.m_hysteresisCycles;
@@ -82,7 +81,7 @@ class AppView extends Ui.View
         dc.drawText(g_XMid, g_YMid/2 + margin, font, repCounter.format("%03d"), Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
     }
 
-    function displayRest(dc)
+    function displayRest(dc as Gfx.Dc) as Void
     {
         var app = Application.getApp();
         var fontValues = Gfx.FONT_NUMBER_MILD;
@@ -98,7 +97,7 @@ class AppView extends Ui.View
         dc.drawText(g_XMid, g_YMid, fontRest, m_rest_msg, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
     }
 
-    function displayHysteresisThreshold(dc)
+    function displayHysteresisThreshold(dc as Gfx.Dc) as Void
     {
         var app = Application.getApp();
         var thresholdState = app.m_hysteresis.m_hysteresisState;
@@ -118,7 +117,7 @@ class AppView extends Ui.View
         dc.drawRectangle(thresholdX, thresholdY, 8, 8);
     }
 
-    function displayTimerAndSet(dc)
+    function displayTimerAndSet(dc as Gfx.Dc) as Void
     {
         var app = Application.getApp();
         var sportSession = app.m_session;
@@ -147,23 +146,19 @@ class AppView extends Ui.View
             Gfx.TEXT_JUSTIFY_RIGHT|Gfx.TEXT_JUSTIFY_VCENTER);
     }
 
-    function onUpdate(dc)
+    function onUpdate(dc as Gfx.Dc) as Void
     {
         View.onUpdate(dc);
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
         dc.clear();
 
         var app = Application.getApp();
-        var sportSession = app.m_session;
 
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
-
-        var xTinyFH = dc.getFontHeight(Gfx.FONT_XTINY);
 
         displayTime(dc);
 
         var sessionState = app.m_session.m_state;
-        var repCounterHeight = dc.getFontHeight(Graphics.FONT_NUMBER_THAI_HOT);
         if(sessionState == STATE_RUN) {
             displayCounter(dc);
             displayHysteresisThreshold(dc);
@@ -180,8 +175,6 @@ class AppView extends Ui.View
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
 
         displayTimerAndSet(dc);
-
-        return true;
     }
 
 

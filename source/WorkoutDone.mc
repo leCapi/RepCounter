@@ -1,10 +1,11 @@
 using Toybox.Graphics as Gfx;
 using Toybox.WatchUi;
+import Toybox.Lang;
 
 class WorkoutDoneView extends WatchUi.View
 {
-    var m_message;
-    function initialize(ok)
+    var m_message as WatchUi.Resource or Null;
+    function initialize(ok as Boolean)
     {
         View.initialize();
         if(ok) {
@@ -14,32 +15,18 @@ class WorkoutDoneView extends WatchUi.View
         }
     }
 
-    function onLayout(dc)
-    {
-        return false;
-    }
-
-    function onShow()
-    {
-      return false;
-    }
-
-
-    function onUpdate(dc)
+    function onUpdate(dc as Gfx.Dc) as Void
     {
         View.onUpdate(dc);
         dc.setColor(Gfx.COLOR_BLACK, Gfx.COLOR_BLACK);
         dc.clear();
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
         dc.drawText(g_XMid, g_YMid, Gfx.FONT_MEDIUM, m_message, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
-
-        return true;
     }
 
-    function onHide()
-    {
-        return false;
-    }
+    function onHide() as Void {}
+    function onLayout(dc as Gfx.Dc) as Void {}
+    function onShow() as Void {}
 }
 
 class WorkoutDoneInputDelegate extends WatchUi.InputDelegate

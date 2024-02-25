@@ -1,6 +1,8 @@
 using Toybox.Math;
 
-function sameArray(a1, a2)
+import Toybox.Lang;
+
+function sameArray(a1 as Array<Numeric>, a2 as Array<Numeric>) as Boolean
 {
     var s1 = a1.size();
     var s2 = a2.size();
@@ -15,14 +17,14 @@ function sameArray(a1, a2)
     return true;
 }
 
-function copyArray(array)
+function copyArray(array as Array<Numeric>) as Array<Numeric>
 {
     var arrayCopy = array.slice(0, array.size());
     return arrayCopy;
 }
 
 //https://www.geeksforgeeks.org/insertion-sort/
-function insertionSort(arr)
+function insertionSort(arr as Array<Numeric>) as Void
 {
     var i;
     var key;
@@ -40,7 +42,7 @@ function insertionSort(arr)
     }
 }
 
-function isArraySorted(array)
+function isArraySorted(array as Array<Numeric>) as Boolean
 {
     var arraySize = array.size();
     if(array.size() == 0) {
@@ -58,7 +60,7 @@ function isArraySorted(array)
 }
 
 // https://www.techiedelight.com/iterative-merge-sort-algorithm-bottom-up/
-function mergesort(A)
+function mergesort(A as Array<Numeric>) as Void
 {
     var lastIndex = A.size() - 1;
     var tempArray = copyArray(A);
@@ -76,12 +78,13 @@ function mergesort(A)
 /**********************************************
     PRIVATE STUFF BELOW
 ***********************************************/
-function min(x, y)
+function min(x as Numeric, y as Numeric) as Numeric
 {
     return (x < y) ? x : y;
 }
 
-function merge(A, tempArray, from, mid, to)
+function merge(A as Array<Numeric>, tempArray as Array<Numeric>, from as Numeric,
+            mid as Numeric, to as Numeric) as Void
 {
     var k = from;
     var i = from;

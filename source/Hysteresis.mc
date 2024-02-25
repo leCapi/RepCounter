@@ -4,16 +4,18 @@ using Toybox.System;
 using Toybox.Timer;
 using Toybox.WatchUi;
 
+import Toybox.Lang;
+
 class Hystersis
 {
-    var m_hysteresisState;
-    var m_lastPoint;
-    var m_hysteresisCycles;
-    var m_soundCounter;
+    var m_hysteresisState as Number = THRESHOLD_LOW;
+    var m_lastPoint as Number = -1;
+    var m_hysteresisCycles as Number = 0;
+    var m_soundCounter as Number = 0;
 
-    var m_cal;
+    var m_cal as Calibration;
 
-    var m_settings;
+    var m_settings as Settings;
 
     function initialize()
     {
@@ -23,18 +25,18 @@ class Hystersis
         self.resetContext();
     }
 
-    function abortCalibration()
+    function abortCalibration() as Void
     {
         m_cal.abortCalibration();
         self.resetSettings();
     }
 
-    function resetSettings()
+    function resetSettings() as Void
     {
         m_settings = new Settings();
     }
 
-    function calibrationTimerCallback()
+    function calibrationTimerCallback() as Void
     {
         m_cal.m_clockCount -= 1;
         if(m_cal.m_clockCount == 0){
@@ -43,7 +45,7 @@ class Hystersis
         WatchUi.requestUpdate();
     }
 
-    function calibrate()
+    function calibrate() as Boolean
     {
         m_cal.m_clockCount = maxCalibrationClockCount;
         m_cal.m_state = CALIBRATION_RUNNING;
@@ -54,7 +56,7 @@ class Hystersis
         return true;
     }
 
-    function stopRecording()
+    function stopRecording() as Void
     {
         if (m_cal.m_state != CALIBRATION_RUNNING) {
             return;
@@ -67,7 +69,7 @@ class Hystersis
         m_cal.nextCalibrationStep();
     }
 
-    function isRecordingForCalibration()
+    function isRecordingForCalibration() as Boolean
     {
         if (m_cal.m_state == CALIBRATION_RUNNING ||
             m_cal.m_lastChunkNeeded){
@@ -76,7 +78,7 @@ class Hystersis
         return false;
     }
 
-    function startCalibrationProcess()
+    function startCalibrationProcess() as Void
     {
         if (m_cal.m_dataRecorded == null)
         {
@@ -86,7 +88,7 @@ class Hystersis
         m_cal.m_timerComputation.start(method(:calibrationProcess), TIMER_COMPUTATION_INTERVAL, true);
     }
 
-    function calibrationProcess()
+    function calibrationProcess() as Void
     {
         switch(m_cal.m_state)
         {
@@ -111,25 +113,25 @@ class Hystersis
         }
     }
 
-    function stepComputeQauntile()
+    function stepComputeQauntile() as Void
     {
         m_cal.computeQuantiles();
         m_cal.nextCalibrationStep();
     }
 
-    function stepFreeMemory()
+    function stepFreeMemory() as Void
     {
         m_cal.m_dataRecordedSorted.free();
         m_cal.nextCalibrationStep();
     }
 
-    function stepPrepareEvaluations()
+    function stepPrepareEvaluations() as Void
     {
         m_cal.prepareSettings();
         m_cal.nextCalibrationStep();
     }
 
-    function evaluateSetting()
+    function evaluateSetting() as Boolean
     {
         if (!m_cal.settingLeftToTest()){
             return true;
@@ -145,7 +147,7 @@ class Hystersis
         return false;
     }
 
-    function stepComputeEvaluations()
+    function stepComputeEvaluations() as Void
     {
         evaluateSetting();
         var res = evaluateSetting();
@@ -154,7 +156,7 @@ class Hystersis
         }
     }
 
-    function stepComputeChooseSettings()
+    function stepComputeChooseSettings() as Void
     {
         var settingsListSize = m_cal.m_settingsList.size();
         if(settingsListSize == 0) {
@@ -173,7 +175,7 @@ class Hystersis
         m_cal.nextCalibrationStep();
     }
 
-    function stepCalibrationDone()
+    function stepCalibrationDone() as Void
     {
         m_cal.m_timerComputation.stop();
         self.resetContext();
@@ -181,7 +183,7 @@ class Hystersis
         m_settings.save();
     }
 
-    function appendCalibrationData(data)
+    function appendCalibrationData(data as Array<Number>) as Void
     {
         m_cal.m_dataRecorded.addAll(data);
         mergesort(data);
@@ -192,7 +194,7 @@ class Hystersis
         }
     }
 
-    function resetContext()
+    function resetContext() as Void
     {
         m_hysteresisState = THRESHOLD_LOW;
         m_lastPoint = -1;
@@ -200,7 +202,7 @@ class Hystersis
         m_soundCounter = 0;
     }
 
-    function compute(array)
+    function compute(array as Array<Number>) as Void
     {
         var highValue = m_settings.m_highThresholdValue;
         var lowValue = m_settings.m_lowThresholdValue;

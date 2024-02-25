@@ -1,9 +1,13 @@
+import Toybox.Lang;
+
+typedef Numeric as Number or Float or Long or Double;
+
 class NodeList
 {
-    var m_value;
-    var m_next;
+    var m_value as Numeric;
+    var m_next as NodeList or Null;
 
-    function initialize(value, next)
+    function initialize(value as Numeric, next as NodeList or Null)
     {
         m_value = value;
         m_next = next;
@@ -12,8 +16,8 @@ class NodeList
 
 class SortedList
 {
-    var m_length;
-    var m_first;
+    var m_length as Number;
+    var m_first as NodeList or Null;
 
     function initialize()
     {
@@ -21,7 +25,7 @@ class SortedList
         m_length = 0;
     }
 
-    function free()
+    function free() as Void
     {
         var it = m_first;
         m_first = null;
@@ -33,12 +37,12 @@ class SortedList
         }
     }
 
-    function size()
+    function size() as Number
     {
         return m_length;
     }
 
-    function insertSortedArray(array)
+    function insertSortedArray(array as Array<Numeric>) as Void
     {
         var i = 0;
         if(m_first == null) {

@@ -3,10 +3,12 @@ using Toybox.Graphics as Gfx;
 using Toybox.WatchUi;
 using Toybox.Timer;
 
+import Toybox.Lang;
+
 public const INC_TICK_SETTING = 1;
 public const INC_TICK_SETTING_FAST = 20;
 
-var g_threshodCurrentSetting;
+var g_threshodCurrentSetting as Number = 0;
 
 enum
 {
@@ -14,26 +16,25 @@ enum
     TOUCH_MINUS = 1
 }
 
-var g_soundCSIndex;
-const g_soundCSPossibleValues = [0, 10, 20, 50, 100, 200];
+var g_soundCSIndex as Number = 0;
+const g_soundCSPossibleValues = [0, 10, 20, 50, 100, 200] as Array<Number>;
 
 class EditThresholdView extends WatchUi.View
 {
-    protected var m_thresholdType;
-    protected var m_appSettings;
-    protected var m_unit;
+    protected var m_thresholdType as Number;
+    protected var m_appSettings as Settings;
+    protected var m_unit as WatchUi.Resource;
 
-    function initialize(thresholdType, settings)
+    function initialize(thresholdType as Number, settings as Settings)
     {
         View.initialize();
         self.m_thresholdType = thresholdType;
         self.m_appSettings = settings;
         self.m_unit = WatchUi.loadResource(Rez.Strings.ciq_unit_acceleration);
         g_threshodCurrentSetting = loadThreshold();
-
     }
 
-    function loadThreshold()
+    function loadThreshold() as Number
     {
         var value = 0;
         switch(self.m_thresholdType)
@@ -48,7 +49,7 @@ class EditThresholdView extends WatchUi.View
         return value;
     }
 
-    function onUpdate(dc)
+    function onUpdate(dc as Gfx.Dc) as Void
     {
         View.onUpdate(dc);
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
@@ -59,34 +60,25 @@ class EditThresholdView extends WatchUi.View
         var spaceNeeded = dc.getFontHeight(fontUnit);
         dc.drawText(g_XMid, g_YMid, fontThresholdValue, g_threshodCurrentSetting, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
         dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, m_unit, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
-
-        return true;
     }
 
-    function onLayout(dc)
-    {
-        return false;
-    }
-
-    function onShow()
-    {
-      return false;
-    }
+    function onLayout(dc as Gfx.Dc) as Void {}
+    function onShow() as Void{}
 }
 
 class EditThresholdInputDelegate extends WatchUi.InputDelegate
 {
     const INC_UPDATE_INTERVAL_MS = 350;
 
-    protected var m_thresholdType;
-    protected var m_timer;
-    protected var m_alreadyInc;
-    protected var m_alreadyDec;
-    protected var m_appSettings;
-    protected var m_touchState;
+    protected var m_thresholdType as Number;
+    protected var m_timer as Timer.Timer;
+    protected var m_alreadyInc as Boolean;
+    protected var m_alreadyDec as Boolean;
+    protected var m_appSettings as Settings;
+    protected var m_touchState as Number;
 
 
-    function initialize(thresholdType, settings)
+    function initialize(thresholdType as Number, settings as Settings)
     {
         InputDelegate.initialize();
         self.m_thresholdType = thresholdType;
@@ -97,7 +89,7 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         self.m_touchState = TOUCH_PLUS;
     }
 
-    function onHide()
+    function onHide() as Boolean
     {
         m_timer.stop();
         return true;
@@ -142,7 +134,7 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         return false;
     }
 
-    function saveThreshold(newValue)
+    function saveThreshold(newValue as Number) as Void
     {
         switch(self.m_thresholdType)
         {
@@ -154,12 +146,12 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         }
     }
 
-    function incrementThreshold(inc)
+    function incrementThreshold(inc as Number) as Void
     {
         g_threshodCurrentSetting += inc;
     }
 
-    function decrementThreshold(inc)
+    function decrementThreshold(inc as Number) as Void
     {
         g_threshodCurrentSetting -= inc;
         if (g_threshodCurrentSetting < 0) {
@@ -167,14 +159,14 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
         }
     }
 
-    function incrmentThresholdFast()
+    function incrmentThresholdFast() as Void
     {
         incrementThreshold(INC_TICK_SETTING_FAST);
         m_alreadyInc = true;
         WatchUi.requestUpdate();
     }
 
-    function decrmentThresholdFast()
+    function decrmentThresholdFast() as Void
     {
         decrementThreshold(INC_TICK_SETTING_FAST);
         m_alreadyDec = true;
@@ -243,10 +235,10 @@ class EditThresholdInputDelegate extends WatchUi.InputDelegate
 
 class EditSoundCounterView extends WatchUi.View
 {
-    protected var m_appSettings;
-    protected var m_unit;
+    protected var m_appSettings as Settings;
+    protected var m_unit as WatchUi.Resource;
 
-    function initialize(settings)
+    function initialize(settings as Settings)
     {
         View.initialize();
         self.m_appSettings = settings;
@@ -262,7 +254,7 @@ class EditSoundCounterView extends WatchUi.View
         self.m_unit = WatchUi.loadResource(Rez.Strings.ciq_unit_rep);
     }
 
-    function onUpdate(dc)
+    function onUpdate(dc) as Void
     {
         View.onUpdate(dc);
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
@@ -273,26 +265,17 @@ class EditSoundCounterView extends WatchUi.View
         var spaceNeeded = dc.getFontHeight(fontUnit);
         dc.drawText(g_XMid, g_YMid, fontThresholdValue, g_soundCSPossibleValues[g_soundCSIndex], Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
         dc.drawText(g_XMid, dc.getHeight() - spaceNeeded, fontUnit, m_unit, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
-
-        return true;
     }
 
-    function onLayout(dc)
-    {
-        return false;
-    }
-
-    function onShow()
-    {
-      return false;
-    }
+    function onLayout(dc as Gfx.Dc) as Void {}
+    function onShow() as Void {}
 }
 
 class EditSoundCounterDelegate extends WatchUi.InputDelegate
 {
-    protected var m_appSettings;
+    protected var m_appSettings as Settings;
 
-    function initialize(settings)
+    function initialize(settings as Settings)
     {
         InputDelegate.initialize();
         self.m_appSettings = settings;
@@ -309,7 +292,7 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
         return false;
     }
 
-    function onHide()
+    function onHide() as Boolean
     {
         return false;
     }
@@ -324,12 +307,12 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
         return false;
     }
 
-    function saveSoundCounterSize(newSoundCounterSize)
+    function saveSoundCounterSize(newSoundCounterSize as Number) as Void
     {
         m_appSettings.m_soundCounterSize = g_soundCSPossibleValues[newSoundCounterSize];
     }
 
-    function decreaseSoundCounterSize()
+    function decreaseSoundCounterSize() as Void
     {
         g_soundCSIndex--;
         if(g_soundCSIndex < 0)
@@ -339,7 +322,7 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
         WatchUi.requestUpdate();
     }
 
-    function increaseSoundCounterSize()
+    function increaseSoundCounterSize() as Void
     {
         g_soundCSIndex++;
         if(g_soundCSIndex >= g_soundCSPossibleValues.size())
@@ -349,7 +332,7 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
         WatchUi.requestUpdate();
     }
 
-    function increaseSoundCounterSizeAndLoop()
+    function increaseSoundCounterSizeAndLoop() as Void
     {
         g_soundCSIndex++;
         if(g_soundCSIndex >= g_soundCSPossibleValues.size())

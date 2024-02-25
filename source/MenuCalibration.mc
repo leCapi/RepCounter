@@ -3,17 +3,19 @@ using Toybox.Graphics as Gfx;
 using Toybox.System;
 using Toybox.WatchUi;
 
+import Toybox.Lang;
+
 class MenuCalibrationView extends WatchUi.View
 {
-    var m_textInstruction1;
-    var m_textNbCalRepConfigured;
-    var m_textInstruction2;
-    var m_instructionRules1;
-    var m_instructionRules2;
+    var m_textInstruction1 as WatchUi.TextArea;
+    var m_textNbCalRepConfigured as WatchUi.TextArea;
+    var m_textInstruction2 as WatchUi.TextArea;
+    var m_instructionRules1 as WatchUi.Resource;
+    var m_instructionRules2 as WatchUi.Resource;
 
-    var m_unitRepetition;
+    var m_unitRepetition as WatchUi.Resource;;
 
-    var m_hyst;
+    var m_hyst as Hystersis;
 
     function initialize()
     {
@@ -57,7 +59,7 @@ class MenuCalibrationView extends WatchUi.View
         m_instructionRules2 = WatchUi.loadResource(Rez.Strings.menu_calibration_instructions_4);
     }
 
-    function display_calibration_not_running(dc)
+    function display_calibration_not_running(dc as Gfx.Dc) as Void
     {
         m_textNbCalRepConfigured.setText(m_hyst.m_cal.m_nbRepToCalibrate.format("%02d") +
             " " + m_unitRepetition);
@@ -65,7 +67,7 @@ class MenuCalibrationView extends WatchUi.View
         m_textInstruction1.draw(dc);
     }
 
-    function display_calibration_running(dc)
+    function display_calibration_running(dc as Gfx.Dc) as Void
     {
         var instructionRules = m_instructionRules1 +
             m_hyst.m_cal.m_nbRepToCalibrate + m_instructionRules2;
@@ -89,7 +91,7 @@ class MenuCalibrationView extends WatchUi.View
             Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
     }
 
-    function onUpdate(dc)
+    function onUpdate(dc as Gfx.Dc) as Void
     {
         View.onUpdate(dc);
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
@@ -105,24 +107,15 @@ class MenuCalibrationView extends WatchUi.View
                 display_calibration_running(dc);
                 break;
         }
-
-        return true;
     }
 
-    function onLayout(dc)
-    {
-        return false;
-    }
-
-    function onShow()
-    {
-      return false;
-    }
+    function onLayout(dc as Gfx.Dc) as Void{}
+    function onShow() as Void {}
 }
 
 class MenuCalibrationInputDelegate extends WatchUi.InputDelegate
 {
-    var m_hyst;
+    var m_hyst as Hystersis;
 
     function initialize()
     {
@@ -150,19 +143,19 @@ class MenuCalibrationInputDelegate extends WatchUi.InputDelegate
         return false;
     }
 
-    function start_calibration()
+    function start_calibration() as Void
     {
         Application.getApp().m_hysteresis.calibrate();
         WatchUi.requestUpdate();
     }
 
-    function stop_calibration()
+    function stop_calibration() as Void
     {
         Application.getApp().m_hysteresis.stopRecording();
         WatchUi.requestUpdate();
     }
 
-    function handleKeyCalibrationNotRunning(key)
+    function handleKeyCalibrationNotRunning(key as Number) as Boolean
     {
         switch (key)
         {
@@ -182,7 +175,7 @@ class MenuCalibrationInputDelegate extends WatchUi.InputDelegate
         return false;
     }
 
-    function handleKeyCalibrationRunning(key)
+    function handleKeyCalibrationRunning(key as Number) as Boolean
     {
         switch (key)
         {
@@ -212,7 +205,7 @@ class MenuCalibrationInputDelegate extends WatchUi.InputDelegate
 
 class ProgressBarBehaviorDelegate extends WatchUi.BehaviorDelegate
 {
-    var m_hyst;
+    var m_hyst as Hystersis;
 
     function initialize()
     {
@@ -220,7 +213,7 @@ class ProgressBarBehaviorDelegate extends WatchUi.BehaviorDelegate
         m_hyst = Application.getApp().m_hysteresis;
     }
 
-    function onBack()
+    function onBack() as Boolean
     {
         if (m_hyst.m_cal.m_state == CALIBRATION_DONE){
             m_hyst.m_cal.reset();

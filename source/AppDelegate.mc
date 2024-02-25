@@ -2,18 +2,20 @@ using Toybox.Application;
 using Toybox.Timer;
 using Toybox.WatchUi;
 
+import Toybox.Lang;
+
 class AppDelegate extends WatchUi.BehaviorDelegate
 {
-    var m_refreshTimer;
+    var m_refreshTimer as Timer.Timer;
 
-    function initialize(timer)
+    function initialize(timer as Timer.Timer)
     {
         BehaviorDelegate.initialize();
         m_refreshTimer = timer;
         m_refreshTimer.start(method(:NotifyDisplay), g_refreshTimeMain, true);
     }
 
-    function onMenu()
+    function onMenu() as Boolean
     {
         var app = Application.getApp();
         if(app.m_session.noActivity())
@@ -23,12 +25,12 @@ class AppDelegate extends WatchUi.BehaviorDelegate
         return true;
     }
 
-    function NotifyDisplay()
+    function NotifyDisplay() as Void
     {
         WatchUi.requestUpdate();
     }
 
-    function onSelect()
+    function onSelect() as Boolean
     {
         var app = Application.getApp();
         var sportSession = Application.getApp().m_session;
@@ -44,7 +46,7 @@ class AppDelegate extends WatchUi.BehaviorDelegate
         return true;
     }
 
-    function onBack()
+    function onBack() as Boolean
     {
         var sportSession = Application.getApp().m_session;
         if(sportSession.activityOnGoing()) {
@@ -57,7 +59,7 @@ class AppDelegate extends WatchUi.BehaviorDelegate
         return false;
     }
 
-    function callEndMenu()
+    function callEndMenu() as Void
     {
         var menuTitle = WatchUi.loadResource(Rez.Strings.menu_end);
         var resumeKey = WatchUi.loadResource(Rez.Strings.menu_end_resume);
@@ -84,7 +86,7 @@ class EndMenuInputDelegate extends WatchUi.Menu2InputDelegate
         Menu2InputDelegate.initialize();
     }
 
-    function onSelect(item)
+    function onSelect(item) as Void
     {
         var app = Application.getApp();
         var id = item.getId();
@@ -105,7 +107,7 @@ class EndMenuInputDelegate extends WatchUi.Menu2InputDelegate
         }
     }
 
-    function onBack()
+    function onBack() as Void
     {
         var app = Application.getApp();
         app.resumeActivity();
@@ -120,7 +122,7 @@ class DiscardConfirmationDelegate extends WatchUi.ConfirmationDelegate
         ConfirmationDelegate.initialize();
     }
 
-    function onResponse(response)
+    function onResponse(response as Number) as Void
     {
         var app = Application.getApp();
         if(response == WatchUi.CONFIRM_YES) {

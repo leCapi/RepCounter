@@ -5,6 +5,8 @@ using Toybox.Time;
 using Toybox.Timer;
 using Toybox.WatchUi;
 
+import Toybox.Lang;
+
 const MAX_INT32 =  2147483647;
 
 enum
@@ -28,22 +30,22 @@ const INCREMENT_PROGRESS_BAR = Math.ceil(100.0/(CALIBRATION_DONE - CALIBRATION_C
 
 class Calibration
 {
-    var m_state;
-    var m_dataRecorded;
-    var m_dataRecordedSorted;
-    var m_quantiles;
+    var m_state as Number = CALIBRATION_NOT_RUNNING;
+    var m_dataRecorded as Array<Number> = new Array<Number>[0];
+    var m_dataRecordedSorted as SortedList or Null;
+    var m_quantiles as Array<Number> or Null;
     var m_lastChunkNeeded;
-    var m_timerTimeout;
-    var m_timerComputation;
-    var m_clockCount;
-    var m_nbRepToCalibrate;
+    var m_timerTimeout as Timer.Timer;
+    var m_timerComputation as Timer.Timer;
+    var m_clockCount as Number;
+    var m_nbRepToCalibrate as Number;
     // computation
-    var m_computationProgressBar;
-    var m_textCalibrationDone;
-    var m_processingLabel;
-    var m_progression;
-    var m_settingsList;
-    var m_settingToTest;
+    var m_computationProgressBar as WatchUi.ProgressBar;
+    var m_textCalibrationDone as WatchUi.Resource;
+    var m_processingLabel as WatchUi.Resource;
+    var m_progression as Number;
+    var m_settingsList as Array<TestSettings>;
+    var m_settingToTest as Number;
 
     function initialize()
     {
@@ -56,7 +58,7 @@ class Calibration
         self.reset();
     }
 
-    function incrementNbCalibrationRep()
+    function incrementNbCalibrationRep() as Void
     {
         if(m_nbRepToCalibrate < 80) {
             m_nbRepToCalibrate++;
@@ -64,7 +66,7 @@ class Calibration
         }
     }
 
-    function decrementNbCalibrationRep()
+    function decrementNbCalibrationRep() as Void
     {
         if(m_nbRepToCalibrate > 1) {
             m_nbRepToCalibrate--;
@@ -72,12 +74,12 @@ class Calibration
         }
     }
 
-    function abortCalibration()
+    function abortCalibration() as Void
     {
         self.reset();
     }
 
-    function settingLeftToTest()
+    function settingLeftToTest() as Boolean
     {
         if (m_settingToTest < m_settingsList.size()){
             return true;
@@ -85,7 +87,7 @@ class Calibration
         return false;
     }
 
-    function updateProgressBar()
+    function updateProgressBar() as Void
     {
         if(m_state == CALIBRATION_DONE) {
             m_progression = 100;
@@ -96,7 +98,7 @@ class Calibration
         m_computationProgressBar.setProgress(m_progression);
     }
 
-    function nextCalibrationStep()
+    function nextCalibrationStep() as Void
     {
         m_state++;
         switch (m_state)
@@ -119,25 +121,25 @@ class Calibration
 
     }
 
-    function reset()
+    function reset() as Void
     {
         m_timerTimeout.stop();
         m_timerComputation.stop();
         m_state = CALIBRATION_NOT_RUNNING;
         m_dataRecorded = new[0];
         m_dataRecordedSorted = new SortedList();
-        m_quantiles = new[100];
+        m_quantiles = new Array<Number>[100];
         m_lastChunkNeeded = false;
         m_clockCount = 0;
         m_nbRepToCalibrate = DEFAULT_CALIBRATION_NUMBER_REPS;
-        m_settingsList = new [0];
+        m_settingsList = new Array<TestSettings>[0];
         m_settingToTest = 0;
         m_progression = 0;
         m_computationProgressBar.setProgress(m_progression);
         m_computationProgressBar.setDisplayString(m_processingLabel);
     }
 
-    function quantileIndex(iq)
+    function quantileIndex(iq as Number) as Number
     {
         if(iq > 100)
         {
@@ -147,12 +149,19 @@ class Calibration
         return index.toNumber();
     }
 
-    function quantileValue(quantile)
+    function quantileValue(quantile as Number) as Number
     {
-        return m_quantiles[quantile - 1];
+        if (m_quantiles == null)
+        {
+            return -1;
+        }
+        else
+        {
+            return m_quantiles[quantile - 1];
+        }
     }
 
-    function computeQuantiles()
+    function computeQuantiles() as Void
     {
         var quant = 1;
         var quantIndex = quantileIndex(quant);
@@ -170,7 +179,7 @@ class Calibration
         }
     }
 
-    function prepareSettings()
+    function prepareSettings() as Void
     {
         var listLQ = [14, 16, 18, 20, 22, 24, 26, 28, 30, 32];
         var listHQ = [78, 80, 82, 84, 86, 88, 90, 92, 94];
@@ -186,7 +195,7 @@ class Calibration
         }
     }
 
-    function dumpSettings()
+    function dumpSettings() as Void
     {
         var today = new Time.Moment(Time.today().value());
         var now = Time.Gregorian.info(today, Time.FORMAT_SHORT);

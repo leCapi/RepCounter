@@ -4,11 +4,13 @@ using Toybox.System;
 using Toybox.Timer;
 using Toybox.WatchUi;
 
+import Toybox.Lang;
+
 class Settings
 {
-    var m_highThresholdValue;
-    var m_lowThresholdValue;
-    var m_soundCounterSize;
+    var m_highThresholdValue as Number;
+    var m_lowThresholdValue as Number;
+    var m_soundCounterSize as Number;
 
     function initialize()
     {
@@ -17,7 +19,7 @@ class Settings
         m_soundCounterSize = Application.Properties.getValue("sound_counter");
     }
 
-    function save()
+    function save() as Void
     {
         var app = Application.getApp();
         app.setProperty("high_threshold", m_highThresholdValue);
@@ -28,12 +30,12 @@ class Settings
 
 class TestSettings extends Settings
 {
-    var m_hQuantile;
-    var m_lQuantile;
-    var m_score;
-    var m_selected;
+    var m_hQuantile as Number;
+    var m_lQuantile as Number;
+    var m_score as Number;
+    var m_selected as Boolean;
 
-    function initialize(lQ, hQ, lV, hV)
+    function initialize(lQ as Number, hQ as Number, lV as Number, hV as Number)
     {
         Settings.initialize();
         self.m_lowThresholdValue = lV;
@@ -44,7 +46,7 @@ class TestSettings extends Settings
         self.m_selected = false;
     }
 
-    function isBetter(otherTestSettings)
+    function isBetter(otherTestSettings as TestSettings) as Boolean
     {
         if(m_score < otherTestSettings.m_score) {
             return true;
@@ -69,7 +71,7 @@ class TestSettings extends Settings
         }
     }
 
-    function toString()
+    function toString() as String
     {
         var strValue = m_hQuantile.toString() + "-" + m_lQuantile.toString() + "/" +
             m_highThresholdValue.toString() + "-" + m_lowThresholdValue.toString() + "/" +
