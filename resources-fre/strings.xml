@@ -10,6 +10,7 @@
   <string id="menu_high_threshold">Seuil Haut</string>
   <string id="menu_low_threshold">Seuil Bas</string>
   <string id="menu_sound_counter">Compteur Sonore</string>
+  <string id="menu_version">Version</string>
 
   <string id="menu_calibration_instructions_1">Appuyez sur start pour calibrer les seuils.</string>
   <string id="menu_calibration_instructions_2"> Appuyez sur start si terminé.</string>

@@ -3,4 +3,5 @@
 	<menu-item id="menu_high_threshold" label="@Strings.menu_high_threshold" />
 	<menu-item id="menu_low_threshold" label="@Strings.menu_low_threshold" />
 	<menu-item id="menu_sound_counter" label="@Strings.menu_sound_counter" />
+	<menu-item id="menu_version" label="@Strings.menu_version" />
 </menu>

@@ -366,6 +366,71 @@ class EditSoundCounterDelegate extends WatchUi.InputDelegate
     }
 }
 
+class VersionView extends WatchUi.View
+{
+    protected var m_version as String;
+
+    function initialize()
+    {
+        View.initialize();
+        m_version = "1.3.4";
+    }
+
+    function onUpdate(dc as Gfx.Dc) as Void
+    {
+        View.onUpdate(dc);
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_BLACK);
+        dc.clear();
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+        var font = Gfx.FONT_NUMBER_THAI_HOT;
+        dc.drawText(g_XMid, g_YMid, font, m_version, Gfx.TEXT_JUSTIFY_CENTER|Gfx.TEXT_JUSTIFY_VCENTER);
+    }
+
+    function onLayout(dc as Gfx.Dc) as Void {}
+    function onShow() as Void {}
+}
+
+class VersionDelegate extends WatchUi.InputDelegate
+{
+    function initialize()
+    {
+        InputDelegate.initialize();
+    }
+
+    function onHold(evt)
+    {
+        return false;
+    }
+
+    function onHide() as Boolean
+    {
+        return false;
+    }
+
+    function onRelease(evt)
+    {
+        return false;
+    }
+
+    function onSwipe(evt)
+    {
+        return false;
+    }
+
+    function onKey(evt)
+    {
+        var key = evt.getKey();
+        switch (key)
+        {
+            case KEY_ENTER:
+            case KEY_ESC:
+                WatchUi.popView(WatchUi.SLIDE_RIGHT);
+                return true;
+        }
+        return false;
+    }
+}
+
 class MainMenuInputDelegate extends WatchUi.MenuInputDelegate
 {
     function initialize()
@@ -393,6 +458,10 @@ class MainMenuInputDelegate extends WatchUi.MenuInputDelegate
         } else if (item == :menu_sound_counter) {
             WatchUi.pushView(new EditSoundCounterView(settings),
                 new EditSoundCounterDelegate(settings),
+                WatchUi.SLIDE_LEFT);
+        } else if (item == :menu_version) {
+            WatchUi.pushView(new VersionView(),
+                new VersionDelegate(),
                 WatchUi.SLIDE_LEFT);
         }
     }
